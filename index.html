@@ -1,324 +1,231 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BSLEEPY | Seu Guia para uma Vida Melhor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Estilo Básico (Mantenho o design limpo do OzempPro que você gostou) */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #FFFFFF;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            min-height: 100vh;
-            background-color: #FFFFFF;
-            position: relative;
-        }
-
-        .tela {
-            width: 100%;
-            min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .tela.active {
-            transform: translateX(0);
-            opacity: 1;
-            pointer-events: all;
-            position: relative;
-        }
-
-        .content-area {
-            flex-grow: 1;
-            padding-top: 50px;
-        }
-
-        .header-area {
-            text-align: right;
-        }
-
-        /* Botões */
-        .btn-principal {
-            width: 100%;
-            padding: 18px 20px;
-            font-size: 18px;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-
-        .btn-start {
-            background-color: #000000;
-            color: #FFFFFF;
-        }
-
-        .btn-quiz {
-            background-color: #D3D3D3;
-            color: #707070;
-        }
-
-        .btn-quiz.active {
-            background-color: #000000;
-            color: #FFFFFF;
-        }
-
-        /* Estilo da Tela Inicial (2525.jpg adaptada) */
-        #tela-start h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-        #tela-start p {
-            font-size: 16px;
-            color: #707070;
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        #tela-start img {
-            display: block;
-            margin: 0 auto 30px;
-            max-width: 80%;
-            height: auto; /* Garante que a imagem se ajuste */
-            background-color: #5C32E5; /* Cor de fundo para simular o app */
-            padding: 20px;
-            border-radius: 20px;
-        }
-
-        /* Estilo da Tela de Escolha (2526.jpg e 2527.jpg adaptada) */
-        .quiz-option {
-            background-color: #F8F8F8;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            text-align: left;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .quiz-option.selected {
-            border: 2px solid #5C32E5; 
-            background-color: #F0F0FF;
-        }
-        
-        .question-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 30px;
-        }
-        
-        /* Estilos dos Planos (2531.jpg adaptada) */
-        .plano-option {
-             padding: 15px; 
-             border-radius: 10px; 
-             margin-bottom: 10px; 
-             cursor: pointer;
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-        }
-
-        .plano-option.selected {
-            border: 2px solid #5C32E5;
-            background-color: #F0F0FF;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSLEEPY | Seu Guia para uma Vida Melhor</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+.app-container {
+    width: 100%;
+    max-width: 400px;
+    min-height: 100vh;
+    background-color: #FFFFFF;
+    position: relative;
+}
+.tela {
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 0;
+    pointer-events: none;
+}
+.tela.active {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: all;
+    position: relative;
+}
+.content-area {
+    flex-grow: 1;
+    padding-top: 50px;
+}
+.header-area {
+    text-align: right;
+}
+.btn-principal {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+.btn-start { background-color: #000; color: #FFF; }
+.btn-quiz { background-color: #D3D3D3; color: #707070; }
+.btn-quiz.active { background-color: #000; color: #FFF; }
+#tela-start h1 { font-size: 32px; font-weight: 700; margin-bottom: 5px; text-align: center; }
+#tela-start p { font-size: 16px; color: #707070; text-align: center; margin-bottom: 50px; }
+#tela-start img { display: block; margin: 0 auto 30px; max-width: 80%; height: auto; background-color: #5C32E5; padding: 20px; border-radius: 20px; }
+.quiz-option {
+    background-color: #F8F8F8;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.quiz-option.selected {
+    border: 2px solid #5C32E5;
+    background-color: #F0F0FF;
+}
+.question-title { font-size: 22px; font-weight: 700; margin-bottom: 30px; }
+.plano-option {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.plano-option.selected {
+    border: 2px solid #5C32E5;
+    background-color: #F0F0FF;
+}
+</style>
 </head>
 <body>
+<div class="app-container">
 
-    <div class="app-container">
-        
-        <div class="tela active" id="tela-start">
-            <div class="header-area">
-                <span style="font-size: 14px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">🇧🇷 PT</span>
-            </div>
-            
-            <div class="content-area">
-                <img src="https://via.placeholder.com/300x400.png?text=LOGO+BSLEEPY" alt="Gráfico BSLEEPY">
-                
-                <h1>Bem-vindo ao BSLEEPY</h1>
-                <p>Seu companheiro inteligente para uma boa noite de sono e bem-estar.</p>
-                <p style="font-size: 14px; margin-top: 100px;">Já tenho minha conta</p>
-            </div>
-            
-            <div class="footer-area">
-                <button class="btn-principal btn-start" onclick="proximaTela('tela-quiz-1')">
-                    Começar
-                </button>
-            </div>
+    <!-- Tela inicial -->
+    <div class="tela active" id="tela-start">
+        <div class="header-area">
+            <span style="font-size:14px; padding:5px; border:1px solid #ccc; border-radius:4px;">🇧🇷 PT</span>
         </div>
-
-        <div class="tela" id="tela-quiz-1">
-            <div class="header-area">
-                <span onclick="voltarTela('tela-start')" style="font-size: 24px; cursor: pointer;">&#8249;</span>
-                <div style="height: 4px; background-color: #ccc; margin-top: 10px;">
-                    <div id="progress-bar" style="width: 30%; height: 100%; background-color: #5C32E5;"></div>
-                </div>
-            </div>
-            
-            <div class="content-area">
-                <h2 class="question-title">Qual é o seu objetivo principal?</h2>
-                
-                <div class="quiz-option" data-next="tela-quiz-2">
-                    Dormir mais rápido
-                </div>
-                <div class="quiz-option" data-next="tela-quiz-2">
-                    Reduzir o estresse noturno
-                </div>
-                 <div class="quiz-option" data-next="tela-quiz-2">
-                    Aumentar a energia diária
-                </div>
-            </div>
-            
-            <div class="footer-area">
-                <button class="btn-principal btn-quiz" id="btn-continuar-q1" disabled>
-                    Continuar
-                </button>
-            </div>
+        <div class="content-area">
+            <img src="https://via.placeholder.com/300x400.png?text=LOGO+BSLEEPY" alt="Gráfico BSLEEPY">
+            <h1>Bem-vindo ao BSLEEPY</h1>
+            <p>Seu companheiro inteligente para uma boa noite de sono e bem-estar.</p>
         </div>
-
-        <div class="tela" id="tela-quiz-2">
-            <div class="header-area">
-                <span onclick="voltarTela('tela-quiz-1')" style="font-size: 24px; cursor: pointer;">&#8249;</span>
-                <div style="height: 4px; background-color: #ccc; margin-top: 10px;">
-                    <div id="progress-bar-2" style="width: 60%; height: 100%; background-color: #5C32E5;"></div>
-                </div>
-            </div>
-            
-            <div class="content-area">
-                <h2 class="question-title">Qual é a sua principal dificuldade?</h2>
-                
-                <div class="quiz-option" data-next="tela-planos">
-                    Acordo muito de madrugada
-                </div>
-                <div class="quiz-option" data-next="tela-planos">
-                    Demoro muito para pegar no sono
-                </div>
-                 <div class="quiz-option" data-next="tela-planos">
-                    Tenho ansiedade ao deitar
-                </div>
-            </div>
-            
-            <div class="footer-area">
-                <button class="btn-principal btn-quiz" id="btn-continuar-q2" disabled onclick="proximaTela('tela-planos')">
-                    Continuar
-                </button>
-            </div>
+        <div class="footer-area">
+            <button class="btn-principal btn-start" onclick="proximaTela('tela-quiz-1')">Começar</button>
         </div>
-
-        <div class="tela" id="tela-planos" style="justify-content: flex-end;">
-            <div class="content-area" style="padding-top: 0; text-align: center;">
-                <h2 style="font-size: 30px; margin-bottom: 10px;">BSLEEPY PRO</h2>
-                <p style="margin-bottom: 100px;">Escolha o plano que mais se encaixa em sua jornada:</p>
-                
-                <div style="background-color: white; border-radius: 20px; padding: 20px 0;">
-                    
-                    <div class="plano-option selected" 
-                         onclick="window.location.href='[COLE AQUI O LINK ANUAL DO MERCADO PAGO (R$ 149,88)]'">
-                        <div>
-                            <span style="font-weight: 600;">✅ Plano Anual (Economize 80%)</span>
-                        </div>
-                        <span style="font-weight: 700;">R$ 12,49 / mês</span>
-                    </div>
-
-                    <div class="plano-option"
-                         onclick="window.location.href='[COLE AQUI O LINK MENSAL DO MERCADO PAGO (R$ 59,90)]'">
-                        <div>
-                            <span style="font-weight: 600;">Plano Mensal</span>
-                        </div>
-                        <span style="font-weight: 700;">R$ 59,90 por mês</span>
-                    </div>
-
-                    <button class="btn-principal btn-start" style="margin-top: 30px; background-color: #5C32E5;"
-                            onclick="window.location.href='[COLE AQUI O LINK ANUAL DO MERCADO PAGO (R$ 149,88)]'">
-                        COMEÇAR MINHA JORNADA 🔒
-                    </button>
-                </div>
-
-                <p style="font-size: 12px; margin-top: 15px;">Termos • Privacidade • Restaurar</p>
-            </div>
-        </div>
-
-
     </div>
 
-    <script>
-        // Função para ir para a próxima tela
-        function proximaTela(idProximaTela) {
-            document.querySelector('.tela.active').classList.remove('active');
-            document.getElementById(idProximaTela).classList.add('active');
-            window.scrollTo(0, 0); 
-        }
+    <!-- Pergunta 1 -->
+    <div class="tela" id="tela-quiz-1">
+        <div class="header-area">
+            <span onclick="voltarTela('tela-start')" style="font-size:24px; cursor:pointer;">&#8249;</span>
+        </div>
+        <div class="content-area">
+            <h2 class="question-title">Qual é o seu nome?</h2>
+            <input type="text" id="nome" placeholder="Digite seu nome" style="width:100%;padding:15px;border-radius:10px;border:1px solid #ccc;font-size:16px;">
+        </div>
+        <div class="footer-area">
+            <button class="btn-principal btn-quiz" onclick="proximaTela('tela-quiz-2')">Continuar</button>
+        </div>
+    </div>
 
-        // Função para voltar para a tela anterior
-        function voltarTela(idTelaAnterior) {
-            document.querySelector('.tela.active').classList.remove('active');
-            document.getElementById(idTelaAnterior).classList.add('active');
-            window.scrollTo(0, 0);
-        }
+    <!-- Pergunta 2 -->
+    <div class="tela" id="tela-quiz-2">
+        <div class="header-area">
+            <span onclick="voltarTela('tela-quiz-1')" style="font-size:24px; cursor:pointer;">&#8249;</span>
+        </div>
+        <div class="content-area">
+            <h2 class="question-title">Qual é a sua idade?</h2>
+            <input type="number" id="idade" placeholder="Ex: 25" style="width:100%;padding:15px;border-radius:10px;border:1px solid #ccc;font-size:16px;">
+        </div>
+        <div class="footer-area">
+            <button class="btn-principal btn-quiz" onclick="proximaTela('tela-quiz-3')">Continuar</button>
+        </div>
+    </div>
 
-        // Lógica de Seleção de Opção e Ativação do Botão "Continuar"
-        document.querySelectorAll('#tela-quiz-1 .quiz-option, #tela-quiz-2 .quiz-option').forEach(option => {
-            option.addEventListener('click', function() {
-                const parentId = this.parentElement.parentElement.id; 
-                const currentScreenOptions = document.querySelectorAll(`#${parentId} .quiz-option`);
-                
-                // Remove a seleção de todas as opções da tela atual
-                currentScreenOptions.forEach(opt => opt.classList.remove('selected'));
-                
-                // Adiciona a seleção à opção clicada
-                this.classList.add('selected');
+    <!-- Pergunta 3 -->
+    <div class="tela" id="tela-quiz-3">
+        <div class="header-area">
+            <span onclick="voltarTela('tela-quiz-2')" style="font-size:24px; cursor:pointer;">&#8249;</span>
+        </div>
+        <div class="content-area">
+            <h2 class="question-title">Você sofre de insônia?</h2>
+            <div class="quiz-option" onclick="proximaTela('tela-quiz-4')">Sim, frequentemente</div>
+            <div class="quiz-option" onclick="proximaTela('tela-quiz-4')">Às vezes</div>
+            <div class="quiz-option" onclick="proximaTela('tela-quiz-4')">Não</div>
+        </div>
+    </div>
 
-                // Ativa o botão "Continuar" da tela atual
-                let btnId;
-                if (parentId === 'tela-quiz-1') {
-                    btnId = 'btn-continuar-q1';
-                } else if (parentId === 'tela-quiz-2') {
-                    btnId = 'btn-continuar-q2';
-                }
+    <!-- Pergunta 4 -->
+    <div class="tela" id="tela-quiz-4">
+        <div class="header-area">
+            <span onclick="voltarTela('tela-quiz-3')" style="font-size:24px; cursor:pointer;">&#8249;</span>
+        </div>
+        <div class="content-area">
+            <h2 class="question-title">Quantas horas você dorme por noite?</h2>
+            <div class="quiz-option" onclick="proximaTela('tela-resultado')">Menos de 5h</div>
+            <div class="quiz-option" onclick="proximaTela('tela-resultado')">Entre 5h e 7h</div>
+            <div class="quiz-option" onclick="proximaTela('tela-resultado')">Mais de 7h</div>
+        </div>
+    </div>
 
-                if (btnId) {
-                    const btn = document.getElementById(btnId);
-                    btn.disabled = false;
-                    btn.classList.add('active');
-                    btn.style.backgroundColor = '#000000'; 
-                    btn.style.color = '#FFFFFF';
-                }
-            });
-        });
+    <!-- Tela de resultado gratuito -->
+    <div class="tela" id="tela-resultado">
+        <div class="content-area" style="text-align:center;">
+            <h2 style="font-size:28px;">Seu resumo do sono 🌙</h2>
+            <p style="color:#555; font-size:16px; margin-top:20px;">
+                Com base nas suas respostas, parece que o seu corpo está precisando de um descanso mais profundo e um ritmo noturno mais equilibrado.  
+                💤  
+                Experimente criar um ritual noturno calmo: reduza telas antes de dormir, mantenha um horário fixo e evite cafeína após as 18h.  
+                <br><br>
+                Este é um **resumo gratuito e básico**. Para ter um **plano diário e personalizado**, com ajustes de hábitos e recomendações guiadas, conheça o **BSLEEPY PRO**.
+            </p>
+        </div>
+        <div class="footer-area">
+            <button class="btn-principal btn-start" onclick="proximaTela('tela-planos')">Continuar →</button>
+        </div>
+    </div>
 
-        // Adiciona a ação de ir para a próxima tela quando o botão de Q1 é clicado
-        document.getElementById('btn-continuar-q1').addEventListener('click', function() {
-            proximaTela('tela-quiz-2');
-        });
-    </script>
+    <!-- Tela dos planos -->
+    <div class="tela" id="tela-planos" style="justify-content:flex-end;">
+        <div class="content-area" style="padding-top:0; text-align:center;">
+            <h2 style="font-size:30px; margin-bottom:10px;">BSLEEPY PRO</h2>
+            <p style="margin-bottom:100px;">Escolha o plano que mais se encaixa em sua jornada:</p>
+            <div style="background-color:white; border-radius:20px; padding:20px 0;">
+                <div class="plano-option selected"
+                     onclick="window.location.href='[LINK_ANUAL_MERCADO_PAGO]'">
+                    <div><span style="font-weight:600;">✅ Plano Anual (Economize 80%)</span></div>
+                    <span style="font-weight:700;">R$ 12,49 / mês</span>
+                </div>
+                <div class="plano-option"
+                     onclick="window.location.href='[LINK_MENSAL_MERCADO_PAGO]'">
+                    <div><span style="font-weight:600;">Plano Mensal</span></div>
+                    <span style="font-weight:700;">R$ 37,90 / mês</span>
+                </div>
+                <button class="btn-principal btn-start" style="margin-top:30px; background-color:#5C32E5;"
+                        onclick="window.location.href='[LINK_ANUAL_MERCADO_PAGO]'">
+                    COMEÇAR MINHA JORNADA 🔒
+                </button>
+            </div>
+            <p style="font-size:12px; margin-top:15px;">Termos • Privacidade • Restaurar</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function proximaTela(idProximaTela){
+    document.querySelector('.tela.active').classList.remove('active');
+    document.getElementById(idProximaTela).classList.add('active');
+    window.scrollTo(0,0);
+}
+function voltarTela(idTelaAnterior){
+    document.querySelector('.tela.active').classList.remove('active');
+    document.getElementById(idTelaAnterior).classList.add('active');
+    window.scrollTo(0,0);
+}
+</script>
 </body>
 </html>
