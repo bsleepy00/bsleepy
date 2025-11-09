@@ -1,233 +1,602 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BSLEEPY | Seu Guia para uma Vida Melhor</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>BSLEEPY — Quiz & Plano</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #FFFFFF;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-.app-container {
-    width: 100%;
-    max-width: 400px;
-    min-height: 100vh;
-    background-color: #FFFFFF;
-    position: relative;
-}
-.tela {
-    width: 100%;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: transform 0.3s ease-in-out;
-    transform: translateX(100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    opacity: 0;
-    pointer-events: none;
-}
-.tela.active {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: all;
-    position: relative;
-}
-.content-area {
-    flex-grow: 1;
-    padding-top: 40px;
-}
-.header-area { text-align: right; }
-.btn-principal {
-    width: 100%;
-    padding: 18px 20px;
-    font-size: 18px;
-    font-weight: 600;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 20px;
-}
-.btn-start { background-color: #000; color: #FFF; }
-.btn-quiz { background-color: #D3D3D3; color: #707070; }
-.btn-quiz.active { background-color: #000; color: #FFF; }
-.quiz-option {
-    background-color: #F8F8F8;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    text-align: left;
-    font-weight: 600;
-    cursor: pointer;
-}
-.quiz-option.selected {
-    border: 2px solid #5C32E5;
-    background-color: #F0F0FF;
-}
-.question-title { font-size: 22px; font-weight: 700; margin-bottom: 30px; }
-.plano-option {
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.plano-option.selected {
-    border: 2px solid #5C32E5;
-    background-color: #F0F0FF;
-}
-.card {
-    background: #F8F8F8;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    text-align: center;
-}
-.card h3 {
-    margin: 5px 0;
-    font-size: 18px;
-}
-.card p {
-    margin: 0;
-    font-size: 14px;
-    color: #555;
-}
+  /* reset + base */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Poppins',sans-serif;
+    background:#fafafa;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    padding:20px 0;
+  }
+  .wrap{
+    width:100%;
+    max-width:420px; /* mobile app width */
+    min-height:100vh;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(10,10,10,0.06);
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* Header (top bar) */
+  .topbar{
+    height:64px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 18px;
+  }
+  .back{
+    width:36px;height:36px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:all .18s;
+  }
+  .back:hover{transform:translateX(-3px)}
+  .progress-shell{
+    flex:1;height:8px;background:#eee;border-radius:999px;overflow:hidden;
+  }
+  .progress{height:100%;width:0;background:linear-gradient(90deg,#5C32E5,#8A5CFF);transition:width .35s ease}
+
+  /* Screens */
+  .screen{
+    position:absolute;
+    inset:64px 0 0 0;
+    padding:26px;
+    transform:translateX(100%);
+    opacity:0;
+    pointer-events:none;
+    transition:all .36s cubic-bezier(.2,.9,.25,1);
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .screen.active{transform:translateX(0);opacity:1;pointer-events:all}
+  .screen.left{transform:translateX(-20%);opacity:0}
+  .title{
+    text-align:center;
+    margin-top:8px;
+  }
+  .title h1{font-size:20px;font-weight:700;color:#111}
+  .title p{font-size:13px;color:#777;margin-top:6px}
+
+  /* Card input / options */
+  .card{
+    background:#fff;border-radius:14px;padding:16px;
+    box-shadow:0 6px 18px rgba(25,15,45,0.05);
+  }
+  input[type="text"], input[type="number"]{
+    width:100%;padding:14px;border-radius:12px;border:1px solid #eee;font-size:15px;
+    outline:none;transition:box-shadow .15s,border-color .15s;
+  }
+  input:focus{border-color:#d9cfff;box-shadow:0 4px 18px rgba(92,50,229,0.06)}
+  .options{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+  .option{
+    background:#f6f6f8;padding:14px;border-radius:14px;font-weight:600;display:flex;align-items:center;gap:10px;
+    cursor:pointer;border:1px solid transparent;transition:all .18s;
+  }
+  .option.small{padding:10px;font-weight:600}
+  .option:hover{transform:translateY(-3px)}
+  .option.selected{background:#0b0b0b;color:#fff;border:1px solid rgba(92,50,229,0.12);box-shadow:0 8px 30px rgba(92,50,229,0.08)}
+
+  /* Footer (fixed) */
+  .footer{
+    position:sticky;bottom:0;background:linear-gradient(0deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9));padding:16px 26px;
+    border-top:1px solid rgba(10,10,10,0.03);display:flex;gap:12px;align-items:center;justify-content:space-between;
+  }
+  .btn{
+    width:100%;padding:14px;border-radius:14px;border:0;font-weight:700;font-size:15px;cursor:pointer;
+    transition:transform .12s,opacity .12s;
+  }
+  .btn.primary{background:linear-gradient(90deg,#6f46ff,#5c32e5);color:#fff;box-shadow:0 10px 30px rgba(92,50,229,0.12)}
+  .btn.ghost{background:transparent;color:#111;border:1px solid #eee}
+  .btn:active{transform:translateY(1px)}
+  .btn.disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+  /* Result dashboard */
+  .dashboard{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .dash-card{background:#fff;border-radius:14px;padding:12px;text-align:center;box-shadow:0 8px 20px rgba(12,12,30,0.04)}
+  .dash-card h4{font-size:13px;color:#666;margin-bottom:8px}
+  .big-card{grid-column:1/-1;padding:18px;display:flex;gap:16px;align-items:center;justify-content:space-between}
+
+  .big-left{flex:1}
+  .greet{font-weight:700;font-size:18px}
+  .sub{font-size:13px;color:#666;margin-top:6px}
+
+  /* modal plans bottom sheet */
+  .plans-modal{
+    position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,#fff,#fbf7ff);
+    border-top-left-radius:18px;border-top-right-radius:18px;padding:18px;box-shadow:0 -10px 60px rgba(25,10,70,0.12);
+    transform:translateY(110%);transition:transform .36s cubic-bezier(.2,.9,.25,1);z-index:80;
+  }
+  .plans-modal.open{transform:translateY(0)}
+  .plan-row{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:12px;border:1px solid #eee;margin-bottom:10px;background:#fff}
+  .plan-row.selected{border:2px solid #5C32E5;box-shadow:0 10px 30px rgba(92,50,229,0.07)}
+  .plan-badge{background:#111;color:#fff;padding:6px 10px;border-radius:999px;font-size:11px;margin-bottom:8px;display:inline-block}
+
+  /* small helpers */
+  .muted{color:#7b7b88;font-size:13px}
+  .center{text-align:center}
+  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f0ff;color:#4b2aff;font-weight:700;font-size:12px}
+
+  /* animations for choice icons */
+  .pulse{animation:pulse .9s infinite alternate}
+  @keyframes pulse{from{transform:scale(1)}to{transform:scale(1.02)}}
+
+  /* responsive tweaks */
+  @media (max-width:420px){
+    .wrap{border-radius:0;min-height:100vh}
+    .topbar{height:72px;padding:12px}
+    .screen{inset:72px 0 0 0;padding:20px}
+  }
 </style>
 </head>
 <body>
-<div class="app-container">
-
-    <!-- Tela inicial -->
-    <div class="tela active" id="tela-start">
-        <div class="content-area">
-            <img src="https://via.placeholder.com/300x400.png?text=BSLEEPY" alt="Logo" style="display:block;margin:0 auto 30px;max-width:80%;border-radius:20px;background:#5C32E5;padding:20px;">
-            <h1 style="text-align:center;">Bem-vindo ao BSLEEPY</h1>
-            <p style="text-align:center;color:#707070;">Seu companheiro inteligente para uma boa noite de sono.</p>
-        </div>
-        <button class="btn-principal btn-start" onclick="proximaTela('tela-quiz-1')">Começar</button>
+  <div class="wrap" role="application" aria-label="BSLEEPY quiz app">
+    <!-- topbar -->
+    <div class="topbar">
+      <div class="back" id="backBtn" title="Voltar">&#8249;</div>
+      <div class="progress-shell" aria-hidden>
+        <div class="progress" id="progressBar" style="width:0%"></div>
+      </div>
     </div>
 
-    <!-- Quiz -->
-    <div class="tela" id="tela-quiz-1">
-        <div class="content-area">
-            <h2 class="question-title">Qual é o seu nome?</h2>
-            <input id="nome" placeholder="Digite seu nome" style="width:100%;padding:15px;border-radius:10px;border:1px solid #ccc;font-size:16px;">
+    <!-- SCREEN: Intro -->
+    <div class="screen active" id="screen-intro">
+      <div class="title center">
+        <h1>BSLEEPY</h1>
+        <p>Descubra o seu perfil de sono e receba um resumo gratuito.</p>
+      </div>
+
+      <div class="card center" style="background:linear-gradient(180deg,#f7f5ff,#fff);">
+        <img src="https://via.placeholder.com/120x120/5C32E5/FFFFFF?text=BS" alt="logo" style="display:block;margin:0 auto 10px;border-radius:16px">
+        <div style="font-weight:700;font-size:16px">Comece sua jornada</div>
+        <div class="muted" style="margin-top:8px">Responda rapidamente — leva menos de 1 minuto.</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="flex:1">
+            <div style="font-weight:700">Quer feedback diário?</div>
+            <div class="muted" style="margin-top:6px">Ative depois nos planos para receber rotinas e relatórios.</div>
+          </div>
+          <div><span class="chip">Grátis</span></div>
         </div>
-        <button class="btn-principal btn-quiz" onclick="proximaTela('tela-quiz-2')">Continuar</button>
+      </div>
     </div>
 
-    <div class="tela" id="tela-quiz-2">
-        <div class="content-area">
-            <h2 class="question-title">Quantas horas você dorme por noite?</h2>
-            <div class="quiz-option" onclick="horasSono='menos5';proximaTela('tela-resultado')">Menos de 5h</div>
-            <div class="quiz-option" onclick="horasSono='5a7';proximaTela('tela-resultado')">Entre 5h e 7h</div>
-            <div class="quiz-option" onclick="horasSono='mais7';proximaTela('tela-resultado')">Mais de 7h</div>
-        </div>
+    <!-- SCREEN: Pergunta 1 Nome -->
+    <div class="screen" id="screen-q1">
+      <div class="title">
+        <h1>Primeiro, qual é seu nome?</h1>
+        <p>Vamos te chamar pelo nome nos resultados.</p>
+      </div>
+
+      <div class="card">
+        <input type="text" id="inputName" placeholder="Ex: Ana" autocomplete="name" aria-label="Nome">
+      </div>
     </div>
 
-    <!-- Tela de resultado geral gratuito -->
-    <div class="tela" id="tela-resultado">
-        <div class="content-area">
-            <h2 style="text-align:center;">Resumo do seu sono 🌙</h2>
-            
-            <div class="card">
-                <h3>Horas de Sono</h3>
-                <canvas id="graficoSono" width="100" height="100"></canvas>
-                <p id="textoSono"></p>
-            </div>
+    <!-- SCREEN: Pergunta 2 Idade -->
+    <div class="screen" id="screen-q2">
+      <div class="title">
+        <h1>Qual sua idade?</h1>
+        <p>Isso ajuda a personalizar recomendações.</p>
+      </div>
 
-            <div class="card">
-                <h3>Hidratação</h3>
-                <canvas id="graficoAgua" width="100" height="100"></canvas>
-                <p>Você bebe em média <b>2.3L</b> por dia</p>
-            </div>
-
-            <div class="card">
-                <h3>Relaxamento</h3>
-                <canvas id="graficoRelax" width="100" height="100"></canvas>
-                <p>Seu nível médio de relaxamento noturno</p>
-            </div>
-        </div>
-        <button class="btn-principal btn-start" onclick="proximaTela('tela-planos')">Continuar →</button>
+      <div class="card">
+        <input type="number" id="inputAge" min="10" max="120" placeholder="Ex: 28" aria-label="Idade">
+      </div>
     </div>
 
-    <!-- Tela de planos -->
-    <div class="tela" id="tela-planos" style="justify-content:flex-end;">
-        <div class="content-area" style="text-align:center;">
-            <h2 style="font-size:28px;">BSLEEPY PRO</h2>
-            <p style="margin-bottom:30px;">Tenha um plano diário e acompanhamento completo:</p>
-            <div class="plano-option selected" onclick="window.location.href='[LINK_ANUAL_MERCADO_PAGO]'">
-                <span>✅ Plano Anual (Economize 80%)</span>
-                <b>R$ 12,49/mês</b>
-            </div>
-            <div class="plano-option" onclick="window.location.href='[LINK_MENSAL_MERCADO_PAGO]'">
-                <span>Plano Mensal</span>
-                <b>R$ 37,90/mês</b>
-            </div>
-            <button class="btn-principal btn-start" style="margin-top:30px;background:#5C32E5;" onclick="window.location.href='[LINK_ANUAL_MERCADO_PAGO]'">
-                COMEÇAR MINHA JORNADA 🔒
-            </button>
-            <p style="font-size:12px;margin-top:15px;">Termos • Privacidade • Restaurar</p>
+    <!-- SCREEN: Pergunta 3 Insônia -->
+    <div class="screen" id="screen-q3">
+      <div class="title">
+        <h1>Você sofre de insônia?</h1>
+        <p>Escolha a opção que mais se aplica.</p>
+      </div>
+
+      <div class="card">
+        <div class="options" id="insomniaOpts">
+          <div class="option" data-value="freq">Sim, frequentemente</div>
+          <div class="option" data-value="ocas">Às vezes</div>
+          <div class="option" data-value="nao">Não</div>
         </div>
+      </div>
     </div>
-</div>
+
+    <!-- SCREEN: Pergunta 4 Horas sono -->
+    <div class="screen" id="screen-q4">
+      <div class="title">
+        <h1>Quantas horas costuma dormir por noite?</h1>
+        <p>Tente estimar uma média semanal.</p>
+      </div>
+
+      <div class="card">
+        <div class="options" id="hoursOpts">
+          <div class="option" data-value="lt5">Menos de 5h</div>
+          <div class="option" data-value="5_7">Entre 5h e 7h</div>
+          <div class="option" data-value="gt7">Mais de 7h</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN: Pergunta 5 Atividade física -->
+    <div class="screen" id="screen-q5">
+      <div class="title">
+        <h1>Qual seu nível de atividade física?</h1>
+        <p>Isso afeta sono e recuperação.</p>
+      </div>
+
+      <div class="card">
+        <div class="options" id="activityOpts">
+          <div class="option" data-value="sed">Sedentário</div>
+          <div class="option" data-value="lev">Levemente ativo</div>
+          <div class="option" data-value="mod">Moderadamente ativo</div>
+          <div class="option" data-value="alt">Ativo</div>
+          <div class="option" data-value="muito">Muito ativo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN: Resultado -->
+    <div class="screen" id="screen-result">
+      <div class="title">
+        <h1 id="greeting">Resumo do seu sono</h1>
+        <p id="subtitle">Um panorama rápido com dicas básicas.</p>
+      </div>
+
+      <div class="card big-card">
+        <div class="big-left">
+          <div class="greet" id="resultName">Olá!</div>
+          <div class="sub" id="resultSummary">Carregando seu resumo…</div>
+        </div>
+        <div style="width:110px;text-align:center">
+          <canvas id="sleepChart" width="110" height="110"></canvas>
+        </div>
+      </div>
+
+      <div class="dashboard">
+        <div class="dash-card">
+          <h4>Hidratação</h4>
+          <div style="font-weight:700;font-size:20px">2.3L</div>
+          <div class="muted" style="margin-top:6px">Meta: 2.5L</div>
+        </div>
+        <div class="dash-card">
+          <h4>Relaxamento</h4>
+          <div style="font-weight:700;font-size:20px" id="relaxVal">—</div>
+          <div class="muted" style="margin-top:6px">Nível noturno</div>
+        </div>
+        <div class="dash-card">
+          <h4>Duração</h4>
+          <div style="font-weight:700;font-size:20px" id="hoursVal">—</div>
+          <div class="muted" style="margin-top:6px">Horas por noite</div>
+        </div>
+        <div class="dash-card">
+          <h4>Atividade</h4>
+          <div style="font-weight:700;font-size:20px" id="activityVal">—</div>
+          <div class="muted" style="margin-top:6px">Nível</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- footer / navigation -->
+    <div class="footer" id="footer">
+      <div style="width:12px"></div>
+      <button class="btn ghost" id="btnBack">Voltar</button>
+      <button class="btn primary disabled" id="btnNext">Continuar</button>
+    </div>
+
+    <!-- Plans modal -->
+    <div class="plans-modal" id="plansModal" aria-hidden="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div>
+          <div style="font-weight:800;font-size:18px">Monitore diariamente</div>
+          <div class="muted" style="margin-top:6px">Plano com rotina personalizada e relatórios</div>
+        </div>
+        <div style="font-size:12px;color:#999">R$ 12,49 / mês</div>
+      </div>
+
+      <div class="plan-row selected" id="planAnnual">
+        <div>
+          <div class="plan-badge">ECONOMIZE 60%</div>
+          <div style="font-weight:700">Plano anual</div>
+          <div class="muted" style="font-size:13px">Pagamento único — melhor custo</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:800">R$ 12,49</div>
+          <div class="muted">por mês</div>
+        </div>
+      </div>
+
+      <div class="plan-row" id="planMonthly">
+        <div>
+          <div style="font-weight:700">Plano mensal</div>
+          <div class="muted" style="font-size:13px">Cancelamento a qualquer momento</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:800">R$ 37,90</div>
+          <div class="muted">por mês</div>
+        </div>
+      </div>
+
+      <button class="btn primary" id="btnStartPlan" style="margin-top:8px">COMEÇAR MINHA JORNADA 🔒</button>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:10px">
+        <a class="muted" href="#" style="font-size:12px">Termos</a>
+        <a class="muted" href="#" style="font-size:12px">Privacidade</a>
+      </div>
+    </div>
+  </div>
 
 <script>
-let horasSono = '5a7';
-
-function proximaTela(id) {
-    document.querySelector('.tela.active').classList.remove('active');
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0, 0);
-
-    if(id === 'tela-resultado') desenharGraficos();
+/* App state */
+const state = {
+  stepIndex: 0,
+  steps: ['intro','q1','q2','q3','q4','q5','result'],
+  answers: { name:'', age:'', insomnia:'', hours:'', activity:'' }
 }
 
-function desenharGraficos() {
-    const ctx1 = document.getElementById('graficoSono').getContext('2d');
-    const ctx2 = document.getElementById('graficoAgua').getContext('2d');
-    const ctx3 = document.getElementById('graficoRelax').getContext('2d');
-    let sonoValor = horasSono === 'menos5' ? 40 : horasSono === '5a7' ? 70 : 100;
-    let texto = horasSono === 'menos5' ? 
-        'Você dorme pouco. Tente aumentar gradualmente suas horas de sono.' :
-        horasSono === '5a7' ? 
-        'Seu sono está razoável, mas pode melhorar com mais consistência.' :
-        'Excelente! Seu descanso está muito bom.';
-    document.getElementById('textoSono').innerText = texto;
-
-    new Chart(ctx1, {
-        type: 'doughnut',
-        data: { datasets: [{ data: [sonoValor, 100-sonoValor], backgroundColor: ['#5C32E5', '#EEE'], borderWidth:0 }]},
-        options: { cutout: '70%', plugins:{legend:{display:false}} }
-    });
-    new Chart(ctx2, {
-        type: 'doughnut',
-        data: { datasets: [{ data: [80, 20], backgroundColor: ['#32B5E5', '#EEE'], borderWidth:0 }]},
-        options: { cutout: '70%', plugins:{legend:{display:false}} }
-    });
-    new Chart(ctx3, {
-        type: 'doughnut',
-        data: { datasets: [{ data: [60, 40], backgroundColor: ['#4CAF50', '#EEE'], borderWidth:0 }]},
-        options: { cutout: '70%', plugins:{legend:{display:false}} }
-    });
+/* screens */
+const screens = {
+  intro: document.getElementById('screen-intro'),
+  q1: document.getElementById('screen-q1'),
+  q2: document.getElementById('screen-q2'),
+  q3: document.getElementById('screen-q3'),
+  q4: document.getElementById('screen-q4'),
+  q5: document.getElementById('screen-q5'),
+  result: document.getElementById('screen-result')
 }
+
+/* UI elements */
+const progressBar = document.getElementById('progressBar');
+const btnNext = document.getElementById('btnNext');
+const btnBack = document.getElementById('btnBack');
+const backBtn = document.getElementById('backBtn');
+
+/* inputs */
+const inputName = document.getElementById('inputName');
+const inputAge = document.getElementById('inputAge');
+
+/* option containers */
+const insomniaOpts = document.getElementById('insomniaOpts');
+const hoursOpts = document.getElementById('hoursOpts');
+const activityOpts = document.getElementById('activityOpts');
+
+/* result UI */
+const greeting = document.getElementById('greeting');
+const resultName = document.getElementById('resultName');
+const resultSummary = document.getElementById('resultSummary');
+const hoursVal = document.getElementById('hoursVal');
+const activityVal = document.getElementById('activityVal');
+const relaxVal = document.getElementById('relaxVal');
+
+/* plans */
+const plansModal = document.getElementById('plansModal');
+const planAnnual = document.getElementById('planAnnual');
+const planMonthly = document.getElementById('planMonthly');
+const btnStartPlan = document.getElementById('btnStartPlan');
+
+/* Chart placeholders */
+let sleepChart = null;
+
+/* helpers */
+function showScreen(key){
+  // hide all
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  // show requested
+  screens[key].classList.add('active');
+  // progress
+  const stepNum = state.steps.indexOf(key);
+  state.stepIndex = Math.max(0, stepNum);
+  const pct = Math.round((stepNum) / (state.steps.length - 1) * 100);
+  progressBar.style.width = pct + '%';
+  validateCurrent(); // validate for next button
+  // scroll top for mobile comfort
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validateCurrent(){
+  const key = state.steps[state.stepIndex];
+  let valid=false;
+  if(key==='intro') valid=true;
+  if(key==='q1') valid = inputName.value.trim().length >= 2;
+  if(key==='q2') valid = inputAge.value && Number(inputAge.value) >= 10;
+  if(key==='q3') valid = !!state.answers.insomnia;
+  if(key==='q4') valid = !!state.answers.hours;
+  if(key==='q5') valid = !!state.answers.activity;
+  if(key==='result') valid=true;
+  toggleNext(valid);
+}
+
+function toggleNext(enable){
+  if(enable){
+    btnNext.classList.remove('disabled');
+    btnNext.disabled = false;
+  } else {
+    btnNext.classList.add('disabled');
+    btnNext.disabled = true;
+  }
+}
+
+/* next/back logic */
+btnNext.addEventListener('click', () => {
+  if(btnNext.classList.contains('disabled')) return;
+  const current = state.steps[state.stepIndex];
+  // save inputs depending on step
+  if(current==='q1'){ state.answers.name = inputName.value.trim(); }
+  if(current==='q2'){ state.answers.age = inputAge.value.trim(); }
+  // move to next
+  const nextIndex = Math.min(state.stepIndex + 1, state.steps.length - 1);
+  const next = state.steps[nextIndex];
+  showScreen(next);
+  if(next === 'result') renderResult();
+});
+btnBack.addEventListener('click', () => navigateBack());
+backBtn.addEventListener('click', () => navigateBack());
+function navigateBack(){
+  const prevIndex = Math.max(0, state.stepIndex - 1);
+  showScreen(state.steps[prevIndex]);
+}
+
+/* input listeners */
+[inputName, inputAge].forEach(el => el.addEventListener('input', validateCurrent));
+
+/* option selection utility */
+function wireOptions(container, answerKey){
+  container.querySelectorAll('.option').forEach(opt => {
+    opt.addEventListener('click', (e)=>{
+      // clear other selected
+      container.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.answers[answerKey] = opt.getAttribute('data-value');
+      validateCurrent();
+    });
+  });
+}
+wireOptions(insomniaOpts,'insomnia');
+wireOptions(hoursOpts,'hours');
+wireOptions(activityOpts,'activity');
+
+/* result rendering (logic dynamic) */
+function renderResult(){
+  const name = state.answers.name || 'Amigo';
+  const age = Number(state.answers.age) || null;
+  const insomnia = state.answers.insomnia;
+  const hours = state.answers.hours;
+  const activity = state.answers.activity;
+
+  // friendly greeting
+  greeting.innerText = 'Seu Plano Personalizado';
+  resultName.innerText = `Olá, ${name}!`;
+  // hours mapping
+  let hoursText = '—';
+  let sleepScore = 70;
+  if(hours==='lt5'){ hoursText = 'Menos de 5h'; sleepScore=28; }
+  if(hours==='5_7'){ hoursText = 'Entre 5h e 7h'; sleepScore=66; }
+  if(hours==='gt7'){ hoursText = 'Mais de 7h'; sleepScore=94; }
+
+  // activity mapping
+  const activityMap = { sed:'Sedentário', lev:'Levemente ativo', mod:'Moderado', alt:'Ativo', muito:'Muito ativo' };
+  activityVal.innerText = activityMap[activity] || '—';
+  hoursVal.innerText = hoursText;
+
+  // relax estimation
+  let relaxScore = 60;
+  if(insomnia==='freq') relaxScore = 32;
+  if(insomnia==='ocas') relaxScore = 58;
+  if(insomnia==='nao') relaxScore = 82;
+  relaxVal.innerText = relaxScore + '%';
+
+  // summary text (personalized)
+  let summary = '';
+  if(insomnia==='freq'){
+    summary = 'Detectamos sinais de insônia frequente. Experimente rotina de higiene do sono: evite telas 60 min antes, mantenha horário regular e pratique técnicas de relaxamento.';
+  } else if(hours==='lt5'){
+    summary = 'Seu tempo de sono é baixo. Procure aumentar gradualmente sua duração (30–60 min por semana) e evite cafeína após 16h.';
+  } else if(hours==='5_7'){
+    summary = 'Sono razoável — com pequenos ajustes na rotina noturna você pode melhorar a qualidade.';
+  } else {
+    summary = 'Ótimo! Você tem boas horas de sono. Mantenha rotina e hábitos saudáveis para conservar a qualidade.';
+  }
+  // add age/activity hints
+  if(age && age >= 60){
+    summary += ' Como tem mais de 60 anos, fale com seu médico se tiver despertares frequentes.';
+  }
+  if(activity==='sed'){
+    summary += ' Incorporar exercício leve durante o dia pode melhorar a qualidade do sono.';
+  }
+
+  resultSummary.innerText = summary;
+
+  // render chart
+  drawSleepChart(sleepScore, relaxScore);
+
+  // show 'open plans' after a pause? we show button to open modal in footer to simulate app experience
+  setTimeout(()=>{ openPlansUI(); }, 700);
+}
+
+/* Chart render (doughnut) */
+function drawSleepChart(sleepScore, relaxScore){
+  const ctx = document.getElementById('sleepChart').getContext('2d');
+  if(sleepChart) sleepChart.destroy();
+  sleepChart = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      datasets:[{
+        data:[sleepScore, 100 - sleepScore],
+        backgroundColor:['#5C32E5','#eee'],
+        borderWidth:0
+      }]
+    },
+    options:{
+      cutout:'70%',
+      plugins:{
+        tooltip:{enabled:false},
+        legend:{display:false},
+        beforeDraw: function() {}
+      }
+    }
+  });
+}
+
+/* Plans modal logic */
+function openPlansUI(){
+  plansModal.classList.add('open'); plansModal.setAttribute('aria-hidden','false');
+  // footer 'Continue' button becomes "Ver planos"
+  btnNext.innerText = 'Ver planos';
+  btnNext.onclick = ()=>{ plansModal.classList.add('open'); plansModal.setAttribute('aria-hidden','false'); };
+  // change back button to close modal if open
+  btnBack.onclick = ()=>{ plansModal.classList.toggle('open'); };
+}
+
+/* Plan selection */
+planAnnual.addEventListener('click', ()=>{ planAnnual.classList.add('selected'); planMonthly.classList.remove('selected'); });
+planMonthly.addEventListener('click', ()=>{ planMonthly.classList.add('selected'); planAnnual.classList.remove('selected'); });
+
+btnStartPlan.addEventListener('click', ()=>{
+  // Simula checkout — aqui você substitui pelo link do MP / checkout real
+  const selected = planAnnual.classList.contains('selected') ? 'ANUAL' : 'MENSAL';
+  alert('Iniciando checkout — plano selecionado: ' + selected + '\n(Substitua aqui pelo seu link do Mercado Pago)');
+});
+
+/* Initial navigation: show intro then q1 via next click */
+showScreen('intro');
+
+/* Make navigation via footer Next also respond to Enter on inputs */
+[inputName, inputAge].forEach(el=>{
+  el.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && !btnNext.classList.contains('disabled')){
+      btnNext.click();
+    }
+  });
+});
+
+/* Prevent pinch-zoom on mobile via touch-action (best-effort) */
+document.addEventListener('touchmove', function(e){ /* allow scrolling */ }, {passive:true});
+
+/* Accessibility: keyboard friendly quick nav */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowRight'){ btnNext.click(); }
+  if(e.key === 'ArrowLeft'){ navigateBack(); }
+});
+
+/* ensure step sync if user clicks top progress back */
+progressBar.addEventListener('click', ()=>{}); /* kept for extensibility */
 </script>
 </body>
 </html>
