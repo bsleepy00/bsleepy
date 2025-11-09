@@ -1,602 +1,668 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>BSLEEPY — Quiz & Plano</title>
+<title>BSLEEPY — Quiz (Tema Escuro)</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  /* reset + base */
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family:'Poppins',sans-serif;
-    background:#fafafa;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    padding:20px 0;
-  }
-  .wrap{
-    width:100%;
-    max-width:420px; /* mobile app width */
-    min-height:100vh;
-    background:#fff;
-    border-radius:18px;
-    box-shadow:0 10px 30px rgba(10,10,10,0.06);
-    overflow:hidden;
-    position:relative;
-  }
+/* ---------- RESET / BASE ---------- */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(180deg,#0b0710 0%, #12061a 100%);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  padding:18px 12px;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+/* app container */
+.app{
+  width:100%;
+  max-width:420px;
+  min-height:100vh;
+  background:transparent;
+  position:relative;
+  overflow:hidden;
+  border-radius:20px;
+}
 
-  /* Header (top bar) */
-  .topbar{
-    height:64px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:10px 18px;
-  }
-  .back{
-    width:36px;height:36px;border-radius:10px;
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;
-    transition:all .18s;
-  }
-  .back:hover{transform:translateX(-3px)}
-  .progress-shell{
-    flex:1;height:8px;background:#eee;border-radius:999px;overflow:hidden;
-  }
-  .progress{height:100%;width:0;background:linear-gradient(90deg,#5C32E5,#8A5CFF);transition:width .35s ease}
+/* subtle particle background */
+.bg-dots{
+  position:absolute;inset:0;
+  background-image:
+   radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity:0.06;pointer-events:none;
+  transform:translateZ(0);
+}
 
-  /* Screens */
-  .screen{
-    position:absolute;
-    inset:64px 0 0 0;
-    padding:26px;
-    transform:translateX(100%);
-    opacity:0;
-    pointer-events:none;
-    transition:all .36s cubic-bezier(.2,.9,.25,1);
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-    overflow:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-  .screen.active{transform:translateX(0);opacity:1;pointer-events:all}
-  .screen.left{transform:translateX(-20%);opacity:0}
-  .title{
-    text-align:center;
-    margin-top:8px;
-  }
-  .title h1{font-size:20px;font-weight:700;color:#111}
-  .title p{font-size:13px;color:#777;margin-top:6px}
+/* top bar (hidden on intro) */
+.topbar{
+  height:64px;display:flex;align-items:center;gap:12px;padding:10px 14px;
+  backdrop-filter: blur(6px);
+  position:relative; z-index:4;
+}
+.top-left{
+  width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.03);cursor:pointer;
+}
+.progress-wrap{flex:1;height:8px;border-radius:999px;background:rgba(255,255,255,0.04);overflow:hidden}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#6f46ff,#5c32e5);transition:width .36s cubic-bezier(.2,.9,.25,1)}
 
-  /* Card input / options */
-  .card{
-    background:#fff;border-radius:14px;padding:16px;
-    box-shadow:0 6px 18px rgba(25,15,45,0.05);
-  }
-  input[type="text"], input[type="number"]{
-    width:100%;padding:14px;border-radius:12px;border:1px solid #eee;font-size:15px;
-    outline:none;transition:box-shadow .15s,border-color .15s;
-  }
-  input:focus{border-color:#d9cfff;box-shadow:0 4px 18px rgba(92,50,229,0.06)}
-  .options{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-  .option{
-    background:#f6f6f8;padding:14px;border-radius:14px;font-weight:600;display:flex;align-items:center;gap:10px;
-    cursor:pointer;border:1px solid transparent;transition:all .18s;
-  }
-  .option.small{padding:10px;font-weight:600}
-  .option:hover{transform:translateY(-3px)}
-  .option.selected{background:#0b0b0b;color:#fff;border:1px solid rgba(92,50,229,0.12);box-shadow:0 8px 30px rgba(92,50,229,0.08)}
+/* screens */
+.screen{
+  position:absolute;left:0;right:0;top:64px;bottom:0;padding:24px;overflow:auto;
+  transform:translateX(12%);opacity:0;pointer-events:none;transition:all .42s cubic-bezier(.2,.9,.25,1);
+}
+.screen.active{transform:translateX(0);opacity:1;pointer-events:all}
+.screen.left{transform:translateX(-8%);opacity:0}
+.header{
+  text-align:center;margin-top:6px;margin-bottom:14px;
+}
+.header h1{font-size:22px;letter-spacing:0.2px;margin-bottom:8px}
+.header p{color:rgba(255,255,255,0.72);font-size:13px}
 
-  /* Footer (fixed) */
-  .footer{
-    position:sticky;bottom:0;background:linear-gradient(0deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9));padding:16px 26px;
-    border-top:1px solid rgba(10,10,10,0.03);display:flex;gap:12px;align-items:center;justify-content:space-between;
-  }
-  .btn{
-    width:100%;padding:14px;border-radius:14px;border:0;font-weight:700;font-size:15px;cursor:pointer;
-    transition:transform .12s,opacity .12s;
-  }
-  .btn.primary{background:linear-gradient(90deg,#6f46ff,#5c32e5);color:#fff;box-shadow:0 10px 30px rgba(92,50,229,0.12)}
-  .btn.ghost{background:transparent;color:#111;border:1px solid #eee}
-  .btn:active{transform:translateY(1px)}
-  .btn.disabled{opacity:.45;cursor:not-allowed;transform:none}
+/* intro */
+.intro-card{
+  margin-top:22px;border-radius:16px;padding:22px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+  box-shadow:0 10px 30px rgba(10,6,20,0.35);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.logo{
+  width:112px;height:112px;border-radius:18px;background:linear-gradient(180deg,#5C32E5,#8A5CFF);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;color:#fff;
+  box-shadow:0 18px 50px rgba(92,50,229,0.16);
+}
 
-  /* Result dashboard */
-  .dashboard{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .dash-card{background:#fff;border-radius:14px;padding:12px;text-align:center;box-shadow:0 8px 20px rgba(12,12,30,0.04)}
-  .dash-card h4{font-size:13px;color:#666;margin-bottom:8px}
-  .big-card{grid-column:1/-1;padding:18px;display:flex;gap:16px;align-items:center;justify-content:space-between}
+/* card */
+.card{
+  margin-top:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:14px;padding:16px;box-shadow:0 8px 26px rgba(5,5,10,0.28);
+}
 
-  .big-left{flex:1}
-  .greet{font-weight:700;font-size:18px}
-  .sub{font-size:13px;color:#666;margin-top:6px}
+/* inputs & options */
+.input{
+  width:100%;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;
+  font-size:15px;outline:none;
+}
+.options{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.option{
+  padding:14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:600;
+  transition:all .16s;
+}
+.option .label{color:rgba(255,255,255,0.92)}
+.option:hover{transform:translateY(-4px)}
+.option.selected{background:linear-gradient(90deg,#6f46ff,#5c32e5);box-shadow:0 10px 30px rgba(92,50,229,0.12);border-color:rgba(255,255,255,0.06);color:#fff}
 
-  /* modal plans bottom sheet */
-  .plans-modal{
-    position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,#fff,#fbf7ff);
-    border-top-left-radius:18px;border-top-right-radius:18px;padding:18px;box-shadow:0 -10px 60px rgba(25,10,70,0.12);
-    transform:translateY(110%);transition:transform .36s cubic-bezier(.2,.9,.25,1);z-index:80;
-  }
-  .plans-modal.open{transform:translateY(0)}
-  .plan-row{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:12px;border:1px solid #eee;margin-bottom:10px;background:#fff}
-  .plan-row.selected{border:2px solid #5C32E5;box-shadow:0 10px 30px rgba(92,50,229,0.07)}
-  .plan-badge{background:#111;color:#fff;padding:6px 10px;border-radius:999px;font-size:11px;margin-bottom:8px;display:inline-block}
+/* footer for navigation -> shows after start */
+.footer{
+  position:fixed;left:0;right:0;bottom:18px;display:flex;gap:14px;padding:12px 18px;align-items:center;
+  justify-content:space-between;max-width:420px;margin:0 auto;z-index:40;
+  pointer-events:all;
+}
+.btn{
+  padding:13px 18px;border-radius:12px;font-weight:700;border:0;cursor:pointer;
+}
+.btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)}
+.btn.primary{background:linear-gradient(90deg,#6f46ff,#5c32e5);color:#fff;box-shadow:0 12px 30px rgba(92,50,229,0.14)}
+.btn.disabled{opacity:.45;cursor:not-allowed}
 
-  /* small helpers */
-  .muted{color:#7b7b88;font-size:13px}
-  .center{text-align:center}
-  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f0ff;color:#4b2aff;font-weight:700;font-size:12px}
+/* result dashboard */
+.grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;
+}
+.stat{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:12px;border-radius:12px;text-align:center;
+}
+.big{
+  grid-column:1/-1;padding:16px;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+}
+.stat h3{font-size:13px;color:rgba(255,255,255,0.75)}
+.stat p{font-weight:700;font-size:18px;margin-top:6px}
 
-  /* animations for choice icons */
-  .pulse{animation:pulse .9s infinite alternate}
-  @keyframes pulse{from{transform:scale(1)}to{transform:scale(1.02)}}
+/* plans modal (bottom sheet) */
+.modal{
+  position:fixed;left:0;right:0;bottom:0;padding:18px;border-top-left-radius:18px;border-top-right-radius:18px;
+  background:linear-gradient(180deg,#0b0811,#0f0718);box-shadow:0 -20px 60px rgba(5,5,10,0.6);transform:translateY(120%);
+  transition:transform .36s cubic-bezier(.2,.9,.25,1);z-index:90;
+}
+.modal.open{transform:translateY(0)}
+.plan{
+  display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:12px;margin-bottom:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);
+}
+.plan.selected{box-shadow:0 18px 40px rgba(92,50,229,0.12);border:1px solid rgba(92,50,229,0.18)}
 
-  /* responsive tweaks */
-  @media (max-width:420px){
-    .wrap{border-radius:0;min-height:100vh}
-    .topbar{height:72px;padding:12px}
-    .screen{inset:72px 0 0 0;padding:20px}
-  }
+/* small text */
+.small{font-size:12px;color:rgba(255,255,255,0.7)}
+.center{text-align:center}
+
+/* accessibility fixes */
+[aria-hidden="true"]{display:none}
+
+/* responsive tweaks */
+@media (max-width:420px){
+  .header h1{font-size:20px;}
+  .topbar{height:72px}
+  .screen{top:72px}
+}
 </style>
 </head>
 <body>
-  <div class="wrap" role="application" aria-label="BSLEEPY quiz app">
-    <!-- topbar -->
-    <div class="topbar">
-      <div class="back" id="backBtn" title="Voltar">&#8249;</div>
-      <div class="progress-shell" aria-hidden>
-        <div class="progress" id="progressBar" style="width:0%"></div>
+  <div class="app" role="application" aria-label="BSLEEPY Quiz">
+    <div class="bg-dots" aria-hidden="true"></div>
+
+    <!-- TOP BAR (starts hidden, shown once quiz starts) -->
+    <div id="topbar" class="topbar" style="display:none">
+      <div id="backIcon" class="top-left" title="Voltar">&#8249;</div>
+      <div class="progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div id="progress" class="progress" style="width:0%"></div>
       </div>
     </div>
 
-    <!-- SCREEN: Intro -->
-    <div class="screen active" id="screen-intro">
-      <div class="title center">
-        <h1>BSLEEPY</h1>
-        <p>Descubra o seu perfil de sono e receba um resumo gratuito.</p>
+    <!-- SCREENS -->
+    <!-- Intro screen -->
+    <div id="intro" class="screen active" style="top:0; padding-top:40px;">
+      <div class="header center">
+        <h1 style="color:#fff">BSLEEPY</h1>
+        <p>Seu guia inteligente para noites melhores</p>
       </div>
 
-      <div class="card center" style="background:linear-gradient(180deg,#f7f5ff,#fff);">
-        <img src="https://via.placeholder.com/120x120/5C32E5/FFFFFF?text=BS" alt="logo" style="display:block;margin:0 auto 10px;border-radius:16px">
-        <div style="font-weight:700;font-size:16px">Comece sua jornada</div>
-        <div class="muted" style="margin-top:8px">Responda rapidamente — leva menos de 1 minuto.</div>
+      <div class="intro-card card" style="margin:22px 8px;">
+        <div class="logo">BS</div>
+        <div style="font-weight:700;font-size:18px">Sono mais profundo. Vida melhor.</div>
+        <div class="small" style="color:rgba(255,255,255,0.68);text-align:center">Responda um rápido quiz e receba um resumo gratuito com dicas fáceis de aplicar.</div>
+        <button id="startBtn" class="btn primary" style="width:100%;margin-top:16px">Começar Agora</button>
       </div>
 
-      <div class="card">
-        <div style="display:flex;gap:10px;align-items:center">
+      <div class="card" style="margin:12px 8px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:12px">
           <div style="flex:1">
-            <div style="font-weight:700">Quer feedback diário?</div>
-            <div class="muted" style="margin-top:6px">Ative depois nos planos para receber rotinas e relatórios.</div>
+            <div style="font-weight:700">100k+ usuários</div>
+            <div class="small" style="margin-top:6px">Milhares já melhoraram seu sono com pequenas mudanças.</div>
           </div>
-          <div><span class="chip">Grátis</span></div>
+          <div style="width:64px;height:64px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">★</div>
         </div>
       </div>
     </div>
 
-    <!-- SCREEN: Pergunta 1 Nome -->
-    <div class="screen" id="screen-q1">
-      <div class="title">
-        <h1>Primeiro, qual é seu nome?</h1>
-        <p>Vamos te chamar pelo nome nos resultados.</p>
+    <!-- Q1: Nome -->
+    <div id="q1" class="screen" aria-hidden="true">
+      <div class="header">
+        <h1>Qual é o seu nome?</h1>
+        <p>Vamos personalizar o resultado.</p>
       </div>
-
       <div class="card">
-        <input type="text" id="inputName" placeholder="Ex: Ana" autocomplete="name" aria-label="Nome">
+        <input id="nameInput" class="input" type="text" placeholder="Ex: Ana" aria-label="Nome">
       </div>
     </div>
 
-    <!-- SCREEN: Pergunta 2 Idade -->
-    <div class="screen" id="screen-q2">
-      <div class="title">
+    <!-- Q2: Idade -->
+    <div id="q2" class="screen" aria-hidden="true">
+      <div class="header">
         <h1>Qual sua idade?</h1>
-        <p>Isso ajuda a personalizar recomendações.</p>
+        <p>A idade ajuda a refinar as recomendações.</p>
       </div>
-
       <div class="card">
-        <input type="number" id="inputAge" min="10" max="120" placeholder="Ex: 28" aria-label="Idade">
+        <input id="ageInput" class="input" type="number" min="10" max="120" placeholder="Ex: 28" aria-label="Idade">
       </div>
     </div>
 
-    <!-- SCREEN: Pergunta 3 Insônia -->
-    <div class="screen" id="screen-q3">
-      <div class="title">
-        <h1>Você sofre de insônia?</h1>
-        <p>Escolha a opção que mais se aplica.</p>
+    <!-- Q3: Peso -->
+    <div id="q3" class="screen" aria-hidden="true">
+      <div class="header">
+        <h1>Qual é seu peso (kg)?</h1>
+        <p>Opcional — afeta sugestões de atividade.</p>
       </div>
-
       <div class="card">
-        <div class="options" id="insomniaOpts">
-          <div class="option" data-value="freq">Sim, frequentemente</div>
-          <div class="option" data-value="ocas">Às vezes</div>
-          <div class="option" data-value="nao">Não</div>
-        </div>
+        <input id="weightInput" class="input" type="number" min="20" max="400" placeholder="Ex: 72" aria-label="Peso">
       </div>
     </div>
 
-    <!-- SCREEN: Pergunta 4 Horas sono -->
-    <div class="screen" id="screen-q4">
-      <div class="title">
-        <h1>Quantas horas costuma dormir por noite?</h1>
-        <p>Tente estimar uma média semanal.</p>
+    <!-- Q4: Insônia -->
+    <div id="q4" class="screen" aria-hidden="true">
+      <div class="header">
+        <h1>Você tem dificuldade para pegar no sono?</h1>
+        <p>Escolha a melhor opção.</p>
       </div>
-
       <div class="card">
-        <div class="options" id="hoursOpts">
-          <div class="option" data-value="lt5">Menos de 5h</div>
-          <div class="option" data-value="5_7">Entre 5h e 7h</div>
-          <div class="option" data-value="gt7">Mais de 7h</div>
+        <div id="insomnia" class="options">
+          <div class="option" data-val="freq"><span class="label">Sim, frequentemente</span></div>
+          <div class="option" data-val="ocas"><span class="label">Às vezes</span></div>
+          <div class="option" data-val="nao"><span class="label">Não</span></div>
         </div>
       </div>
     </div>
 
-    <!-- SCREEN: Pergunta 5 Atividade física -->
-    <div class="screen" id="screen-q5">
-      <div class="title">
-        <h1>Qual seu nível de atividade física?</h1>
-        <p>Isso afeta sono e recuperação.</p>
+    <!-- Q5: Uso do celular -->
+    <div id="q5" class="screen" aria-hidden="true">
+      <div class="header">
+        <h1>Você usa celular antes de dormir?</h1>
+        <p>Isso influencia a qualidade do sono.</p>
       </div>
-
       <div class="card">
-        <div class="options" id="activityOpts">
-          <div class="option" data-value="sed">Sedentário</div>
-          <div class="option" data-value="lev">Levemente ativo</div>
-          <div class="option" data-value="mod">Moderadamente ativo</div>
-          <div class="option" data-value="alt">Ativo</div>
-          <div class="option" data-value="muito">Muito ativo</div>
+        <div id="phone" class="options">
+          <div class="option" data-val="sempre"><span class="label">Sempre</span></div>
+          <div class="option" data-val="asvezes"><span class="label">Às vezes</span></div>
+          <div class="option" data-val="nunca"><span class="label">Raramente / Nunca</span></div>
         </div>
       </div>
     </div>
 
-    <!-- SCREEN: Resultado -->
-    <div class="screen" id="screen-result">
-      <div class="title">
-        <h1 id="greeting">Resumo do seu sono</h1>
-        <p id="subtitle">Um panorama rápido com dicas básicas.</p>
+    <!-- Q6: Horas de sono -->
+    <div id="q6" class="screen" aria-hidden="true">
+      <div class="header">
+        <h1>Quantas horas dorme por noite em média?</h1>
+        <p>Estimativa semanal.</p>
       </div>
-
-      <div class="card big-card">
-        <div class="big-left">
-          <div class="greet" id="resultName">Olá!</div>
-          <div class="sub" id="resultSummary">Carregando seu resumo…</div>
-        </div>
-        <div style="width:110px;text-align:center">
-          <canvas id="sleepChart" width="110" height="110"></canvas>
-        </div>
-      </div>
-
-      <div class="dashboard">
-        <div class="dash-card">
-          <h4>Hidratação</h4>
-          <div style="font-weight:700;font-size:20px">2.3L</div>
-          <div class="muted" style="margin-top:6px">Meta: 2.5L</div>
-        </div>
-        <div class="dash-card">
-          <h4>Relaxamento</h4>
-          <div style="font-weight:700;font-size:20px" id="relaxVal">—</div>
-          <div class="muted" style="margin-top:6px">Nível noturno</div>
-        </div>
-        <div class="dash-card">
-          <h4>Duração</h4>
-          <div style="font-weight:700;font-size:20px" id="hoursVal">—</div>
-          <div class="muted" style="margin-top:6px">Horas por noite</div>
-        </div>
-        <div class="dash-card">
-          <h4>Atividade</h4>
-          <div style="font-weight:700;font-size:20px" id="activityVal">—</div>
-          <div class="muted" style="margin-top:6px">Nível</div>
+      <div class="card">
+        <div id="hours" class="options">
+          <div class="option" data-val="lt5"><span class="label">Menos de 5h</span></div>
+          <div class="option" data-val="5_7"><span class="label">Entre 5h e 7h</span></div>
+          <div class="option" data-val="gt7"><span class="label">Mais de 7h</span></div>
         </div>
       </div>
     </div>
 
-    <!-- footer / navigation -->
-    <div class="footer" id="footer">
-      <div style="width:12px"></div>
-      <button class="btn ghost" id="btnBack">Voltar</button>
-      <button class="btn primary disabled" id="btnNext">Continuar</button>
+    <!-- Q7: Acorda descansado -->
+    <div id="q7" class="screen" aria-hidden="true">
+      <div class="header">
+        <h1>Você acorda se sentindo descansado?</h1>
+        <p>Rápido e objetivo.</p>
+      </div>
+      <div class="card">
+        <div id="rested" class="options">
+          <div class="option" data-val="sim"><span class="label">Sim</span></div>
+          <div class="option" data-val="asvezes"><span class="label">Às vezes</span></div>
+          <div class="option" data-val="nao"><span class="label">Não</span></div>
+        </div>
+      </div>
     </div>
 
-    <!-- Plans modal -->
-    <div class="plans-modal" id="plansModal" aria-hidden="true">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <!-- RESULT SCREEN -->
+    <div id="result" class="screen" aria-hidden="true">
+      <div class="header center">
+        <h1 id="resultTitle">Seu resumo gratuito</h1>
+        <p id="resultSubtitle">Sugestões rápidas para melhorar sua noite</p>
+      </div>
+
+      <div class="big card">
+        <div>
+          <div style="font-weight:800;font-size:18px" id="greetName">Olá!</div>
+          <div class="small" id="greetSub">Analisando suas respostas...</div>
+        </div>
+        <div style="width:92px;height:92px">
+          <canvas id="chartSleep" width="92" height="92"></canvas>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="stat">
+          <h3>Horas</h3>
+          <p id="statHours">—</p>
+        </div>
+        <div class="stat">
+          <h3>Insônia</h3>
+          <p id="statInsomnia">—</p>
+        </div>
+        <div class="stat">
+          <h3>Uso do celular</h3>
+          <p id="statPhone">—</p>
+        </div>
+        <div class="stat">
+          <h3>Acordar</h3>
+          <p id="statRest">—</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div style="font-weight:700">Dicas rápidas</div>
+        <ul style="margin-top:10px;list-style:none;padding-left:0;color:rgba(255,255,255,0.82)">
+          <li style="margin-bottom:8px">• Evite telas 60 min antes de dormir.</li>
+          <li style="margin-bottom:8px">• Mantenha horário fixo para deitar e acordar.</li>
+          <li style="margin-bottom:8px">• Reduza cafeína após 16h.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FOOTER NAV (hidden until quiz starts) -->
+    <div id="footer" class="footer" style="display:none">
+      <button id="backBtn" class="btn ghost">Voltar</button>
+      <button id="nextBtn" class="btn primary disabled">Continuar</button>
+    </div>
+
+    <!-- PLANS MODAL -->
+    <div id="plans" class="modal" aria-hidden="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div>
           <div style="font-weight:800;font-size:18px">Monitore diariamente</div>
-          <div class="muted" style="margin-top:6px">Plano com rotina personalizada e relatórios</div>
+          <div class="small" style="margin-top:6px">Plano com rotinas personalizadas e acompanhamento</div>
         </div>
-        <div style="font-size:12px;color:#999">R$ 12,49 / mês</div>
+        <div style="font-weight:800">R$ 12,49</div>
       </div>
 
-      <div class="plan-row selected" id="planAnnual">
+      <div id="planAnnual" class="plan selected">
         <div>
-          <div class="plan-badge">ECONOMIZE 60%</div>
-          <div style="font-weight:700">Plano anual</div>
-          <div class="muted" style="font-size:13px">Pagamento único — melhor custo</div>
+          <div style="font-size:12px;background:#5c32e5;padding:6px 8px;border-radius:999px;display:inline-block;margin-bottom:6px">MAIS POPULAR</div>
+          <div style="font-weight:700">Plano Anual</div>
+          <div class="small">Pagamento único — melhor custo</div>
         </div>
         <div style="text-align:right">
           <div style="font-weight:800">R$ 12,49</div>
-          <div class="muted">por mês</div>
+          <div class="small">/ mês</div>
         </div>
       </div>
 
-      <div class="plan-row" id="planMonthly">
+      <div id="planMonthly" class="plan">
         <div>
-          <div style="font-weight:700">Plano mensal</div>
-          <div class="muted" style="font-size:13px">Cancelamento a qualquer momento</div>
+          <div style="font-weight:700">Plano Mensal</div>
+          <div class="small">Cancele a qualquer momento</div>
         </div>
         <div style="text-align:right">
           <div style="font-weight:800">R$ 37,90</div>
-          <div class="muted">por mês</div>
+          <div class="small">/ mês</div>
         </div>
       </div>
 
-      <button class="btn primary" id="btnStartPlan" style="margin-top:8px">COMEÇAR MINHA JORNADA 🔒</button>
-      <div style="display:flex;gap:12px;justify-content:center;margin-top:10px">
-        <a class="muted" href="#" style="font-size:12px">Termos</a>
-        <a class="muted" href="#" style="font-size:12px">Privacidade</a>
+      <button id="buyBtn" class="btn primary" style="width:100%;margin-top:8px">COMEÇAR MINHA JORNADA 🔒</button>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:12px">
+        <a href="#" class="small" style="color:rgba(255,255,255,0.6)">Termos</a>
+        <a href="#" class="small" style="color:rgba(255,255,255,0.6)">Privacidade</a>
       </div>
     </div>
+
   </div>
 
 <script>
-/* App state */
-const state = {
-  stepIndex: 0,
-  steps: ['intro','q1','q2','q3','q4','q5','result'],
-  answers: { name:'', age:'', insomnia:'', hours:'', activity:'' }
-}
+/* ---------- State & elements ---------- */
+const steps = ['intro','q1','q2','q3','q4','q5','q6','q7','result'];
+let step = 0;
+const answers = { name:'', age:'', weight:'', insomnia:'', phone:'', hours:'', rested:'' };
 
-/* screens */
-const screens = {
-  intro: document.getElementById('screen-intro'),
-  q1: document.getElementById('screen-q1'),
-  q2: document.getElementById('screen-q2'),
-  q3: document.getElementById('screen-q3'),
-  q4: document.getElementById('screen-q4'),
-  q5: document.getElementById('screen-q5'),
-  result: document.getElementById('screen-result')
-}
-
-/* UI elements */
-const progressBar = document.getElementById('progressBar');
-const btnNext = document.getElementById('btnNext');
-const btnBack = document.getElementById('btnBack');
+/* DOM */
+const topbar = document.getElementById('topbar');
+const progress = document.getElementById('progress');
+const footer = document.getElementById('footer');
+const backIcon = document.getElementById('backIcon');
+const startBtn = document.getElementById('startBtn');
+const nextBtn = document.getElementById('nextBtn');
 const backBtn = document.getElementById('backBtn');
 
-/* inputs */
-const inputName = document.getElementById('inputName');
-const inputAge = document.getElementById('inputAge');
+/* screen elements */
+function screenEl(id){ return document.getElementById(id); }
+const nameInput = document.getElementById('nameInput');
+const ageInput = document.getElementById('ageInput');
+const weightInput = document.getElementById('weightInput');
 
-/* option containers */
-const insomniaOpts = document.getElementById('insomniaOpts');
-const hoursOpts = document.getElementById('hoursOpts');
-const activityOpts = document.getElementById('activityOpts');
+const insomniaOpts = document.getElementById('insomnia');
+const phoneOpts = document.getElementById('phone');
+const hoursOpts = document.getElementById('hours');
+const restedOpts = document.getElementById('rested');
 
-/* result UI */
-const greeting = document.getElementById('greeting');
-const resultName = document.getElementById('resultName');
-const resultSummary = document.getElementById('resultSummary');
-const hoursVal = document.getElementById('hoursVal');
-const activityVal = document.getElementById('activityVal');
-const relaxVal = document.getElementById('relaxVal');
+const resultTitle = document.getElementById('resultTitle');
+const greetName = document.getElementById('greetName');
+const greetSub = document.getElementById('greetSub');
+const statHours = document.getElementById('statHours');
+const statInsomnia = document.getElementById('statInsomnia');
+const statPhone = document.getElementById('statPhone');
+const statRest = document.getElementById('statRest');
 
-/* plans */
-const plansModal = document.getElementById('plansModal');
+const plansModal = document.getElementById('plans');
+const buyBtn = document.getElementById('buyBtn');
 const planAnnual = document.getElementById('planAnnual');
 const planMonthly = document.getElementById('planMonthly');
-const btnStartPlan = document.getElementById('btnStartPlan');
 
-/* Chart placeholders */
+/* chart */
 let sleepChart = null;
 
-/* helpers */
-function showScreen(key){
-  // hide all
-  Object.values(screens).forEach(s => s.classList.remove('active'));
-  // show requested
-  screens[key].classList.add('active');
-  // progress
-  const stepNum = state.steps.indexOf(key);
-  state.stepIndex = Math.max(0, stepNum);
-  const pct = Math.round((stepNum) / (state.steps.length - 1) * 100);
-  progressBar.style.width = pct + '%';
-  validateCurrent(); // validate for next button
-  // scroll top for mobile comfort
+/* ---------- Helpers ---------- */
+function showStep(i){
+  // bounds
+  if(i < 0) i = 0;
+  if(i >= steps.length) i = steps.length - 1;
+  step = i;
+
+  // show/hide topbar & footer: topbar & footer appear after intro
+  if(steps[step] === 'intro'){
+    topbar.style.display = 'none'; footer.style.display = 'none';
+  } else {
+    topbar.style.display = 'flex'; footer.style.display = 'flex';
+  }
+
+  // update screens visibility
+  steps.forEach(s => {
+    const el = screenEl(s);
+    if(!el) return;
+    el.classList.remove('active');
+    el.setAttribute('aria-hidden','true');
+  });
+  const curr = screenEl(steps[step]);
+  if(curr){
+    curr.classList.add('active');
+    curr.setAttribute('aria-hidden','false');
+  }
+
+  // update progress width
+  const pct = Math.round((step) / (steps.length - 1) * 100);
+  progress.style.width = pct + '%';
+
+  // update back button disabled if on intro
+  if(step === 0){ backBtn.disabled = true; backBtn.classList.add('btn-disabled'); }
+  else { backBtn.disabled = false; backBtn.classList.remove('btn-disabled'); }
+
+  // validate to enable/disable next button
+  validateCurrent();
+  // scroll top for mobile smoothness
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+function nextStep(){
+  if(!validateCurrent()) return;
+  if(step < steps.length - 1) showStep(step + 1);
+  // when reaching 'result', render it
+  if(steps[step] === 'result') renderResult();
+}
+
+function prevStep(){
+  if(step > 0) showStep(step - 1);
+}
+
+/* ---------- Validation logic (prevents continue) ---------- */
 function validateCurrent(){
-  const key = state.steps[state.stepIndex];
-  let valid=false;
-  if(key==='intro') valid=true;
-  if(key==='q1') valid = inputName.value.trim().length >= 2;
-  if(key==='q2') valid = inputAge.value && Number(inputAge.value) >= 10;
-  if(key==='q3') valid = !!state.answers.insomnia;
-  if(key==='q4') valid = !!state.answers.hours;
-  if(key==='q5') valid = !!state.answers.activity;
-  if(key==='result') valid=true;
-  toggleNext(valid);
+  const curr = steps[step];
+  let ok = false;
+  if(curr === 'intro') ok = true;
+  if(curr === 'q1') ok = (nameInput.value.trim().length >= 2);
+  if(curr === 'q2') ok = (ageInput.value && Number(ageInput.value) >= 10);
+  if(curr === 'q3') ok = (!weightInput.value || (Number(weightInput.value) >= 20 && Number(weightInput.value) < 400)); // optional
+  if(curr === 'q4') ok = !!answers.insomnia;
+  if(curr === 'q5') ok = !!answers.phone;
+  if(curr === 'q6') ok = !!answers.hours;
+  if(curr === 'q7') ok = !!answers.rested;
+  if(curr === 'result') ok = true;
+  // toggle next button
+  if(ok){ nextBtn.classList.remove('disabled'); nextBtn.disabled = false; } else { nextBtn.classList.add('disabled'); nextBtn.disabled = true; }
+  return ok;
 }
 
-function toggleNext(enable){
-  if(enable){
-    btnNext.classList.remove('disabled');
-    btnNext.disabled = false;
-  } else {
-    btnNext.classList.add('disabled');
-    btnNext.disabled = true;
-  }
-}
-
-/* next/back logic */
-btnNext.addEventListener('click', () => {
-  if(btnNext.classList.contains('disabled')) return;
-  const current = state.steps[state.stepIndex];
-  // save inputs depending on step
-  if(current==='q1'){ state.answers.name = inputName.value.trim(); }
-  if(current==='q2'){ state.answers.age = inputAge.value.trim(); }
-  // move to next
-  const nextIndex = Math.min(state.stepIndex + 1, state.steps.length - 1);
-  const next = state.steps[nextIndex];
-  showScreen(next);
-  if(next === 'result') renderResult();
+/* ---------- Wire inputs/options ---------- */
+startBtn.addEventListener('click', ()=>{
+  // jump to q1
+  showStep(1);
 });
-btnBack.addEventListener('click', () => navigateBack());
-backBtn.addEventListener('click', () => navigateBack());
-function navigateBack(){
-  const prevIndex = Math.max(0, state.stepIndex - 1);
-  showScreen(state.steps[prevIndex]);
-}
+backBtn.addEventListener('click', ()=> prevStep());
+backIcon.addEventListener('click', ()=> prevStep());
+nextBtn.addEventListener('click', ()=> nextStep());
 
-/* input listeners */
-[inputName, inputAge].forEach(el => el.addEventListener('input', validateCurrent));
+// inputs
+nameInput.addEventListener('input', ()=>{ validateCurrent(); });
+ageInput.addEventListener('input', ()=>{ validateCurrent(); });
+weightInput.addEventListener('input', ()=>{ validateCurrent(); });
 
-/* option selection utility */
-function wireOptions(container, answerKey){
-  container.querySelectorAll('.option').forEach(opt => {
-    opt.addEventListener('click', (e)=>{
-      // clear other selected
-      container.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
-      opt.classList.add('selected');
-      state.answers[answerKey] = opt.getAttribute('data-value');
+// options generic wiring
+function wireOptions(container, key){
+  container.querySelectorAll('.option').forEach(o=>{
+    o.addEventListener('click', ()=>{
+      // remove all selected
+      container.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));
+      o.classList.add('selected');
+      answers[key] = o.getAttribute('data-val');
       validateCurrent();
     });
   });
 }
 wireOptions(insomniaOpts,'insomnia');
+wireOptions(phoneOpts,'phone');
 wireOptions(hoursOpts,'hours');
-wireOptions(activityOpts,'activity');
+wireOptions(restedOpts,'rested');
 
-/* result rendering (logic dynamic) */
+/* ---------- Render result ---------- */
 function renderResult(){
-  const name = state.answers.name || 'Amigo';
-  const age = Number(state.answers.age) || null;
-  const insomnia = state.answers.insomnia;
-  const hours = state.answers.hours;
-  const activity = state.answers.activity;
+  // capture last inputs
+  answers.name = nameInput.value.trim() || 'Amigo';
+  answers.age = ageInput.value.trim();
+  answers.weight = weightInput.value.trim();
 
-  // friendly greeting
-  greeting.innerText = 'Seu Plano Personalizado';
-  resultName.innerText = `Olá, ${name}!`;
-  // hours mapping
-  let hoursText = '—';
-  let sleepScore = 70;
-  if(hours==='lt5'){ hoursText = 'Menos de 5h'; sleepScore=28; }
-  if(hours==='5_7'){ hoursText = 'Entre 5h e 7h'; sleepScore=66; }
-  if(hours==='gt7'){ hoursText = 'Mais de 7h'; sleepScore=94; }
+  // friendly texts and stats
+  greetName.innerText = `Olá, ${answers.name}!`;
+  greetSub.innerText = `Resumo rápido com base nas suas respostas`;
 
-  // activity mapping
-  const activityMap = { sed:'Sedentário', lev:'Levemente ativo', mod:'Moderado', alt:'Ativo', muito:'Muito ativo' };
-  activityVal.innerText = activityMap[activity] || '—';
-  hoursVal.innerText = hoursText;
+  // map hours label
+  const hoursMap = { 'lt5':'<5h', '5_7':'5-7h','gt7':'>7h' };
+  statHours.innerText = hoursMap[answers.hours] || '—';
+  const insomniaMap = { 'freq':'Frequente','ocas':'Ocasional','nao':'Não' };
+  statInsomnia.innerText = insomniaMap[answers.insomnia] || '—';
+  const phoneMap = { 'sempre':'Sempre','asvezes':'Às vezes','nunca':'Raramente' };
+  statPhone.innerText = phoneMap[answers.phone] || '—';
+  const restMap = { 'sim':'Sim','asvezes':'Às vezes','nao':'Não' };
+  statRest.innerText = restMap[answers.rested] || '—';
 
-  // relax estimation
-  let relaxScore = 60;
-  if(insomnia==='freq') relaxScore = 32;
-  if(insomnia==='ocas') relaxScore = 58;
-  if(insomnia==='nao') relaxScore = 82;
-  relaxVal.innerText = relaxScore + '%';
-
-  // summary text (personalized)
+  // compose summary suggestions
   let summary = '';
-  if(insomnia==='freq'){
-    summary = 'Detectamos sinais de insônia frequente. Experimente rotina de higiene do sono: evite telas 60 min antes, mantenha horário regular e pratique técnicas de relaxamento.';
-  } else if(hours==='lt5'){
-    summary = 'Seu tempo de sono é baixo. Procure aumentar gradualmente sua duração (30–60 min por semana) e evite cafeína após 16h.';
-  } else if(hours==='5_7'){
-    summary = 'Sono razoável — com pequenos ajustes na rotina noturna você pode melhorar a qualidade.';
+  if(answers.insomnia === 'freq'){
+    summary += 'Sinais de insônia frequente. ';
+  } else if(answers.hours === 'lt5'){
+    summary += 'Seu tempo de sono é baixo. ';
   } else {
-    summary = 'Ótimo! Você tem boas horas de sono. Mantenha rotina e hábitos saudáveis para conservar a qualidade.';
+    summary += 'Seu sono parece dentro do esperado. ';
   }
-  // add age/activity hints
-  if(age && age >= 60){
-    summary += ' Como tem mais de 60 anos, fale com seu médico se tiver despertares frequentes.';
-  }
-  if(activity==='sed'){
-    summary += ' Incorporar exercício leve durante o dia pode melhorar a qualidade do sono.';
-  }
+  if(answers.phone === 'sempre') summary += 'Reduza telas 60min antes de dormir. ';
+  if(answers.rested === 'nao') summary += 'Tente rotina fixa de horário. ';
 
-  resultSummary.innerText = summary;
+  // show summary (not displayed as block but used in modal if needed)
+  resultTitle.innerText = 'Resumo gratuito';
+  document.getElementById('greetSub').innerText = summary || 'Pequenos ajustes podem melhorar seu sono.';
 
-  // render chart
-  drawSleepChart(sleepScore, relaxScore);
+  // draw sleep chart with score based on answers
+  const sleepScore = calcSleepScore();
+  drawChart(sleepScore);
 
-  // show 'open plans' after a pause? we show button to open modal in footer to simulate app experience
-  setTimeout(()=>{ openPlansUI(); }, 700);
+  // after short delay, open plans CTA (simulate app behavior)
+  setTimeout(()=>{ openPlans(); }, 900);
 }
 
-/* Chart render (doughnut) */
-function drawSleepChart(sleepScore, relaxScore){
-  const ctx = document.getElementById('sleepChart').getContext('2d');
+/* compute a simple sleep score 0-100 */
+function calcSleepScore(){
+  // start 80
+  let score = 80;
+  if(answers.hours === 'lt5') score -= 40;
+  if(answers.hours === '5_7') score -= 10;
+  if(answers.insomnia === 'freq') score -= 30;
+  if(answers.phone === 'sempre') score -= 10;
+  if(answers.rested === 'sim') score += 6;
+  score = Math.max(8, Math.min(98, Math.round(score)));
+  return score;
+}
+
+/* draw donut chart */
+function drawChart(value){
+  const ctx = document.getElementById('chartSleep').getContext('2d');
   if(sleepChart) sleepChart.destroy();
   sleepChart = new Chart(ctx, {
     type:'doughnut',
-    data:{
-      datasets:[{
-        data:[sleepScore, 100 - sleepScore],
-        backgroundColor:['#5C32E5','#eee'],
-        borderWidth:0
-      }]
-    },
+    data:{ datasets:[{ data:[value, 100-value], backgroundColor:['#5c32e5','#15141a'], borderWidth:0 }]},
     options:{
-      cutout:'70%',
-      plugins:{
-        tooltip:{enabled:false},
-        legend:{display:false},
-        beforeDraw: function() {}
-      }
+      cutout: '68%',
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      elements:{arc:{borderWidth:0}}
     }
   });
 }
 
-/* Plans modal logic */
-function openPlansUI(){
-  plansModal.classList.add('open'); plansModal.setAttribute('aria-hidden','false');
-  // footer 'Continue' button becomes "Ver planos"
-  btnNext.innerText = 'Ver planos';
-  btnNext.onclick = ()=>{ plansModal.classList.add('open'); plansModal.setAttribute('aria-hidden','false'); };
-  // change back button to close modal if open
-  btnBack.onclick = ()=>{ plansModal.classList.toggle('open'); };
+/* ---------- Plans logic ---------- */
+function openPlans(){
+  plansModalOpen(true);
+}
+function plansModalOpen(open){
+  if(open){
+    plansModal.classList.add('open');
+    plansModal.setAttribute('aria-hidden','false');
+    // change buyBtn behavior to start checkout
+    buyBtn.onclick = ()=> {
+      const plan = planAnnual.classList.contains('selected') ? 'Anual' : 'Mensal';
+      // replace alert with redirect to your Mercado Pago link
+      alert(`Iniciando checkout para: ${plan}\nSubstitua este alert pelo link real do Mercado Pago.`);
+    };
+  } else {
+    plansModal.classList.remove('open');
+    plansModal.setAttribute('aria-hidden','true');
+  }
 }
 
-/* Plan selection */
+/* plan selection toggles */
 planAnnual.addEventListener('click', ()=>{ planAnnual.classList.add('selected'); planMonthly.classList.remove('selected'); });
 planMonthly.addEventListener('click', ()=>{ planMonthly.classList.add('selected'); planAnnual.classList.remove('selected'); });
 
-btnStartPlan.addEventListener('click', ()=>{
-  // Simula checkout — aqui você substitui pelo link do MP / checkout real
-  const selected = planAnnual.classList.contains('selected') ? 'ANUAL' : 'MENSAL';
-  alert('Iniciando checkout — plano selecionado: ' + selected + '\n(Substitua aqui pelo seu link do Mercado Pago)');
+/* ---------- Initial state ---------- */
+showStep(0);
+
+/* Accessibility: keyboard */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowRight') nextStep();
+  if(e.key === 'ArrowLeft') prevStep();
 });
 
-/* Initial navigation: show intro then q1 via next click */
-showScreen('intro');
+/* Prevent accidental zoom (pinch) - best-effort */
+document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
 
-/* Make navigation via footer Next also respond to Enter on inputs */
-[inputName, inputAge].forEach(el=>{
-  el.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' && !btnNext.classList.contains('disabled')){
-      btnNext.click();
-    }
+/* Ensure footer Next is disabled until valid; wire click on Next to nextStep when enabled */
+nextBtn.addEventListener('click', (ev)=>{
+  if(nextBtn.classList.contains('disabled')) ev.preventDefault();
+});
+
+/* Make sure progress / topbar shown when start clicked */
+startBtn.addEventListener('click', ()=>{
+  // small animation: show topbar after a tick
+  setTimeout(()=>{ topbar.style.display = 'flex'; footer.style.display = 'flex'; }, 200);
+});
+
+/* click on screen option also tries to go next automatically after selection for speed */
+const autoAdvance = true; // set to false if you want user to manually press next
+[insomniaOpts, phoneOpts, hoursOpts, restedOpts].forEach(container=>{
+  container.querySelectorAll('.option').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      if(autoAdvance){
+        setTimeout(()=>{ nextStep(); }, 220); // short delay to show selection
+      }
+    });
   });
 });
 
-/* Prevent pinch-zoom on mobile via touch-action (best-effort) */
-document.addEventListener('touchmove', function(e){ /* allow scrolling */ }, {passive:true});
-
-/* Accessibility: keyboard friendly quick nav */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'ArrowRight'){ btnNext.click(); }
-  if(e.key === 'ArrowLeft'){ navigateBack(); }
+/* ensure inputs pressing enter triggers next */
+[nameInput, ageInput, weightInput].forEach(inp=>{
+  if(!inp) return;
+  inp.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && validateCurrent()) nextStep();
+  });
 });
-
-/* ensure step sync if user clicks top progress back */
-progressBar.addEventListener('click', ()=>{}); /* kept for extensibility */
 </script>
 </body>
 </html>
