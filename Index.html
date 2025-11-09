@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSleepy | Seu Guia do Sono</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Reset Básico */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Estilo do Container da "Tela do App" */
+        .tela-app {
+            width: 100%;
+            max-width: 400px; /* Largura de celular */
+            min-height: 800px; /* Altura de celular */
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .oculta {
+            display: none !important;
+        }
+
+        /* --- ELEMENTOS GERAIS --- */
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .subtitulo {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        /* --- HEADER / FOOTER --- */
+
+        .header-app {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            background-color: transparent;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .back-btn, .fechar-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+            margin-right: auto;
+        }
+
+        .rodape-app {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        /* --- BOTÕES E LINKS --- */
+
+        .btn-principal {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(90deg, #9933FF, #6A5ACD); /* Gradiente Roxo */
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-principal:hover:not(.desabilitado) {
+            opacity: 0.9;
+        }
+
+        .btn-principal.desabilitado {
+            background: #ccc !important;
+            cursor: not-allowed;
+        }
+
+        .link-secundario {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #6A5ACD;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .btn-com-cadeado .cadeado {
+            margin-left: 10px;
+        }
+
+
+        /* --- TELA DE BOAS VINDAS (TELA 1) --- */
+        .imagem-app-mock {
+            width: 100%;
+            height: 300px;
+            background-color: #6A5ACD;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* --- TELA DE QUIZ (TELA 2) --- */
+        .opcoes-quiz {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .opcao-card {
+            width: 100%;
+            padding: 20px;
+            text-align: left;
+            background-color: #f7f7f7;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .opcao-card.selecionado {
+            border-color: #6A5ACD;
+            background-color: #f0ebff;
+            box-shadow: 0 2px 5px rgba(106, 90, 205, 0.1);
+        }
+
+        .icone-quiz {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        /* --- TELA DE PERGUNTAS (TELA 3) --- */
+        .progresso-texto {
+            text-align: center;
+            font-size: 14px;
+            color: #6A5ACD;
+            margin-bottom: 25px;
+        }
+        
+        .form-pergunta {
+            margin-bottom: 40px;
+        }
+
+        .label-pergunta {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .input-campo, .select-campo {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        .input-campo:focus, .select-campo:focus {
+            outline: none;
+            border-color: #6A5ACD;
+        }
+
+        /* --- TELA DE RESULTADO (TELA 4) --- */
+        .card-resultado {
+            background-color: #f0ebff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #6A5ACD;
+        }
+
+        .card-resultado h3 {
+            margin-top: 0;
+            color: #6A5ACD;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .meta-valor {
+            font-size: 32px;
+            font-weight: 800;
+            color: #333;
+            margin-top: -10px;
+        }
+
+        .meta-descricao {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .alerta-acesso {
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* --- TELA DE PLANOS (TELA 5) --- */
+
+        .logo-app {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: #6A5ACD;
+            margin-bottom: 30px;
+        }
+
+        .plano-escolha {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .alerta-economia {
+            position: absolute;
+            top: -15px;
+            right: 10px;
+            background-color: #FF5722;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .opcao-plano {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .opcao-plano:last-child {
+            border-bottom: none;
+        }
+
+        .opcao-plano input[type="radio"] {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            margin-right: 15px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .opcao-plano.selecionado .radio-custom {
+            border-color: #6A5ACD;
+        }
+
+        .opcao-plano.selecionado .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #6A5ACD;
+        }
+
+        .nome-plano {
+            flex-grow: 1;
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .preco-plano {
+            font-weight: 700;
+            color: #333;
+            font-size: 18px;
+            text-align: right;
+        }
+
+        .preco-plano .por-mes {
+            display: block;
+            font-weight: 400;
+            font-size: 12px;
+            color: #666;
+            margin-top: -5px;
+        }
+
+        .termos-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .termos-links a {
+            color: #aaa;
+            font-size: 12px;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body onload="mostrarTela('tela-boas-vindas')">
+
+    <div id="tela-boas-vindas" class="tela-app">
+        <div class="header-app">
+            <button class="lang-btn">🇧🇷 PT</button>
+        </div>
+
+        <div class="conteudo-principal">
+            <div class="imagem-app-mock">
+                Gráfico do Sono Aqui
+            </div>
+            
+            <h1>Bem-vindo ao BSleepy</h1>
+            <p class="subtitulo">Seu companheiro inteligente para uma **Noite de Sono Perfeita**.</p>
+        </div>
+
+        <div class="rodape-app">
+            <button class="btn-principal" onclick="mostrarTela('tela-quiz-inicio')">Começar</button>
+            <a href="#" class="link-secundario">Já tenho minha conta</a>
+        </div>
+    </div>
+
+    <div id="tela-quiz-inicio" class="tela-app oculta">
+        <div class="header-app">
+            <button class="back-btn" onclick="mostrarTela('tela-boas-vindas')">←</button>
+        </div>
+
+        <div class="conteudo-principal">
+            <h2>Pronto para ter a energia de que precisa?</h2>
+            <p>Onde você está na sua jornada de sono?</p>
+
+            <div class="opcoes-quiz">
+                <button class="opcao-card" id="opcao-1">
+                    <span class="icone-quiz">✨</span> Já estou acompanhando meu sono
+                </button>
+                <button class="opcao-card" id="opcao-2">
+                    <span class="icone-quiz">▶️</span> Quero começar a melhorar meu sono
+                </button>
+            </div>
+        </div>
+
+        <div class="rodape-app">
+            <button class="btn-principal desabilitado" id="btn-quiz-continuar" onclick="mostrarTela('tela-quiz-perguntas')">Continuar</button>
+        </div>
+    </div>
+    
+    <div id="tela-quiz-perguntas" class="tela-app oculta">
+        <div class="header-app">
+            <button class="back-btn" onclick="mostrarTela('tela-quiz-inicio')">←</button>
+        </div>
+
+        <div class="conteudo-principal">
+            <p class="progresso-texto">Etapa 1 de 5</p>
+            <h2>Calculando sua necessidade de sono</h2>
+            <p>Para um plano personalizado, precisamos de algumas informações básicas.</p>
+
+            <form id="form-quiz" class="form-pergunta">
+                <label for="idade" class="label-pergunta">1. Qual a sua idade?</label>
+                <input type="number" id="idade" name="idade" class="input-campo" placeholder="Ex: 30" min="10" required>
+
+                <label for="peso" class="label-pergunta">2. Qual seu peso (em kg)?</label>
+                <input type="number" id="peso" name="peso" class="input-campo" placeholder="Ex: 75" step="0.1" required>
+
+                <label for="horas_sono_atual" class="label-pergunta">3. Em média, quantas horas você dorme por noite?</label>
+                <select id="horas_sono_atual" name="horas_sono_atual" class="select-campo" required>
+                    <option value="">Selecione...</option>
+                    <option value="4.5">Menos de 5h</option>
+                    <option value="5.5">5 a 6h</option>
+                    <option value="6.5">6 a 7h</option>
+                    <option value="7.5">7 a 8h</option>
+                    <option value="8.5">Mais de 8h</option>
+                </select>
+                
+                </form>
+        </div>
+
+        <div class="rodape-app">
+            <button class="btn-principal" onclick="processarQuiz()">Ver Meu Plano Básico</button>
+        </div>
+    </div>
+
+    <div id="tela-resultado-basico" class="tela-app oculta">
+        <div class="header-app">
+            <button class="back-btn" onclick="mostrarTela('tela-quiz-perguntas')">←</button>
+        </div>
+
+        <div class="conteudo-principal">
+            <h2>⭐ Seu Plano Básico de Sono</h2>
+            <p>Parabéns! Calculamos sua necessidade ideal para começar a transformação do seu descanso.</p>
+
+            <div class="card-resultado">
+                <h3>Meta Diária de Sono</h3>
+                <p id="meta-horas" class="meta-valor">7h30m</p>
+                <p class="meta-descricao">É o tempo ideal que você deve buscar para maximizar a energia e o humor.</p>
+            </div>
+
+            <div class="card-resultado">
+                <h3>Próximo Objetivo: Consistência</h3>
+                <p id="meta-horario" class="meta-valor">Dormir às 23:00</p>
+                <p class="meta-descricao">Ajuste seu ritmo circadiano para ter uma melhor fase REM e profundo.</p>
+            </div>
+
+            <div class="alerta-acesso">
+                **Este é apenas o começo!** Para acompanhar seu progresso diário e receber guias de relaxamento, escolha seu plano abaixo.
+            </div>
+        </div>
+
+        <div class="rodape-app">
+            <button class="btn-principal" onclick="mostrarTela('tela-planos')">Acessar Acompanhamento Diário</button>
+        </div>
+    </div>
+    
+    <div id="tela-planos" class="tela-app oculta">
+        <div class="header-app">
+            <button class="fechar-btn" onclick="mostrarTela('tela-boas-vindas')">✕</button>
+        </div>
+
+        <div class="conteudo-principal">
+            <div class="logo-app">BSleepy</div>
+            
+            <p>Monitore diariamente cada **minuto** de descanso.</p>
+            <p>Para ter acesso total, escolha um plano.</p>
+
+            <div class="plano-escolha">
+                <div class="alerta-economia">ECONOMIZE 68%</div>
+
+                <label class="opcao-plano selecionado">
+                    <input type="radio" name="plano" value="anual" checked>
+                    <span class="radio-custom"></span>
+                    <span class="nome-plano">Plano anual</span>
+                    <span class="preco-plano">R$ 12,49 <span class="por-mes">por mês</span></span>
+                </label>
+
+                <label class="opcao-plano">
+                    <input type="radio" name="plano" value="mensal">
+                    <span class="radio-custom"></span>
+                    <span class="nome-plano">Plano mensal</span>
+                    <span class="preco-plano">R$ 39,90 <span class="por-mes">por mês</span></span>
+                </label>
+            </div>
+            
+            <button class="btn-principal btn-com-cadeado">
+                COMEÇAR MINHA JORNADA <span class="cadeado">🔒</span>
+            </button>
+            
+            <div class="termos-links">
+                <a href="#">Termos</a>
+                <a href="#">Privacidade</a>
+                <a href="#">Restaurar Compra</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função principal para alternar a visibilidade das telas
+        function mostrarTela(id) {
+            document.querySelectorAll('.tela-app').forEach(tela => {
+                tela.classList.add('oculta');
+            });
+            document.getElementById(id).classList.remove('oculta');
+        }
+
+        // Lógica para habilitar o botão de Continuar no Quiz Inicial (Tela 2)
+        document.querySelectorAll('.opcao-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Deseleciona todos e seleciona o clicado
+                document.querySelectorAll('.opcao-card').forEach(c => c.classList.remove('selecionado'));
+                this.classList.add('selecionado');
+                
+                // Habilita o botão
+                document.getElementById('btn-quiz-continuar').classList.remove('desabilitado');
+            });
+        });
+
+        // Lógica para seleção de planos (Tela 5)
+        document.querySelectorAll('.opcao-plano').forEach(plano => {
+            plano.addEventListener('click', function() {
+                document.querySelectorAll('.opcao-plano').forEach(p => p.classList.remove('selecionado'));
+                this.classList.add('selecionado');
+            });
+        });
+
+        // FUNÇÃO DE CÁLCULO E PROCESSAMENTO DO QUIZ (TELA 3 -> TELA 4)
+        function processarQuiz() {
+            const idade = parseFloat(document.getElementById('idade').value);
+            const peso = parseFloat(document.getElementById('peso').value);
+            const horasAtuais = parseFloat(document.getElementById('horas_sono_atual').value);
+
+            // Validação simples
+            if (isNaN(idade) || isNaN(peso) || isNaN(horasAtuais)) {
+                alert('Por favor, preencha todos os campos do quiz!');
+                return;
+            }
+
+            let metaSonoHoras;
+            let metaSonoMinutos;
+            let metaHorarioDormir;
+
+            // 1. Cálculo da Meta Ideal de Sono (Baseado em Idade)
+            if (idade <= 18) {
+                metaSonoHoras = 9; // Adolescentes
+            } else if (idade <= 64) {
+                metaSonoHoras = 7.5; // Adultos
+            } else {
+                metaSonoHoras = 7; // Idosos
+            }
+
+            // 2. Ajuste Fino baseado no déficit e peso (Simulação de Algoritmo Avançado)
+            // Se o déficit for grande (dorme muito menos que a meta), a meta é um pouco mais alta.
+            const deficit = metaSonoHoras - horasAtuais;
+            if (deficit > 1) { // Mais de 1 hora de déficit
+                metaSonoHoras += 0.25; // Aumenta a meta para incentivar a recuperação
+            }
+            
+            // O peso alto (IMC > 30, ou peso > 90kg) também pode aumentar a necessidade
+            if (peso > 90 && idade < 60) {
+                 metaSonoHoras += 0.5;
+            }
+
+            // Garante que a meta fique entre 6.5h e 9h
+            metaSonoHoras = Math.min(Math.max(metaSonoHoras, 6.5), 9);
+
+
+            // 3. Cálculo da Meta de Horário (Simulação)
+            // Baseia-se no despertar médio da maioria (7h) menos a meta.
+            const horaAcordar = 7;
+            let horaDormir = horaAcordar - metaSonoHoras;
+            
+            // Formatando o resultado da hora de dormir (e convertendo para o formato HH:MM)
+            const horaDormirInteira = Math.floor(horaDormir);
+            const minutosDormir = Math.round((horaDormir - horaDormirInteira) * 60);
+
+            // A hora de dormir deve estar no formato 24h. Se for negativo, ajustamos para a noite anterior.
+            let horaAjustada = horaDormirInteira;
+            if (horaAjustada < 0) {
+                horaAjustada += 24; // Ex: -1h vira 23h
+            }
+            
+            metaHorarioDormir = `${String(horaAjustada).padStart(2, '0')}:${String(minutosDormir).padStart(2, '0')}`;
+
+            // 4. Formatando o resultado final de horas
+            const horasFinais = Math.floor(metaSonoHoras);
+            const minutosFinais = Math.round((metaSonoHoras - horasFinais) * 60);
+            
+            const metaSonoFormatada = `${horasFinais}h${String(minutosFinais).padStart(2, '0')}m`;
+
+
+            // 5. I
