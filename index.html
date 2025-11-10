@@ -184,13 +184,21 @@ body{
   .topbar{height:72px}
   .screen{top:72px}
 }
+
+/* --- NOVO CSS PARA ERRO DE VALIDAÇÃO --- */
+/* Erro de input */
+.input.error{border-color:#ff4646;box-shadow:0 0 0 2px rgba(255,70,70,0.1)}
+.error-msg{
+  color:#ff6666;font-size:12px;margin-top:6px;padding:0 10px;text-align:left;
+  transition:all .2s;height:0;overflow:hidden;
+}
+.error-msg.show{height:20px} /* Altura ajustada para exibir a mensagem */
 </style>
 </head>
 <body>
   <div class="app" role="application" aria-label="BSLEEPY Quiz">
     <div class="bg-dots" aria-hidden="true"></div>
 
-    <!-- TOP BAR (starts hidden, shown once quiz starts) -->
     <div id="topbar" class="topbar" style="display:none">
       <div id="backIcon" class="top-left" title="Voltar">&#8249;</div>
       <div class="progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100">
@@ -198,22 +206,18 @@ body{
       </div>
     </div>
 
-    <!-- SCREENS -->
-    <!-- Intro screen (SUBSTITUIR ESTA PARTE NO SEU ARQUIVO EXISTENTE) -->
     <div id="intro" class="screen active" style="top:0; padding-top:40px; overflow-y:auto; -webkit-overflow-scrolling:touch;">
       <div class="header center">
         <h1 style="color:#fff; font-size:24px; margin-bottom:6px;">BSLEEPY</h1>
         <p style="font-size:14px; color:rgba(255,255,255,0.75); margin-bottom:12px;">Seu guia inteligente para noites melhores</p>
       </div>
 
-      <!-- botão no topo -->
       <div style="text-align:center; margin:8px 0 6px 0;">
         <button id="startBtnTop" class="btn primary" style="width:86%; max-width:360px;">Começar Agora</button>
       </div>
 
       <div class="intro-card card" style="margin:12px 8px;">
         <div style="text-align:center; margin-bottom:12px;">
-          <!-- se tiver logo.png no mesmo diretório, será exibida; se não, mostra o texto BS -->
           <img src="logo.png" onerror="this.style.display='none';" alt="BSLEEPY" style="width:120px;height:auto;filter:drop-shadow(0 0 10px rgba(150,100,255,0.5));animation:floatLogo 3s ease-in-out infinite;">
           <div class="logo" style="display:none">BS</div>
         </div>
@@ -221,7 +225,6 @@ body{
         <div style="font-weight:700;font-size:18px;text-align:center">Sono mais profundo. Vida melhor.</div>
         <div class="small" style="color:rgba(255,255,255,0.68);text-align:center;margin-top:8px;">Responda um rápido quiz e receba um resumo gratuito com dicas fáceis de aplicar.</div>
 
-        <!-- botão no meio (original) -->
         <button id="startBtn" class="btn primary" style="width:100%;margin-top:16px">Começar Agora</button>
       </div>
 
@@ -249,13 +252,57 @@ body{
         <p style="font-size:14px;color:rgba(255,255,255,0.7);">Junte-se a quem já está transformando suas noites com a BSLEEPY.</p>
       </div>
 
-      <!-- botão no final -->
       <div style="text-align:center;margin:22px 0 40px 0;">
         <button id="startBtnBottom" class="btn primary" style="width:90%;max-width:360px;">Começar Agora</button>
       </div>
     </div>
 
-    <!-- Q1: Nome -->
+    <div id="signup" class="screen" aria-hidden="true" style="top:0; padding-top:60px;">
+      <div class="header center">
+        <h1>Crie sua conta</h1>
+        <p>Salve seu progresso e receba um plano personalizado!</p>
+      </div>
+
+      <div class="card" style="margin-top:22px;">
+        <button id="googleBtn" class="btn ghost" style="width:100%;margin-bottom:12px;border-color:rgba(255,255,255,0.1)">
+          <img src="https://img.icons8.com/color/20/000000/google-logo.png" alt="Google" style="vertical-align:middle;margin-right:8px">
+          Continuar com Google
+        </button>
+        <button id="facebookBtn" class="btn ghost" style="width:100%;border-color:rgba(255,255,255,0.1)">
+          <img src="https://img.icons8.com/color/20/000000/facebook-new.png" alt="Facebook" style="vertical-align:middle;margin-right:8px">
+          Continuar com Facebook
+        </button>
+
+        <div style="text-align:center;margin:20px 0 10px 0;color:rgba(255,255,255,0.4)">— OU —</div>
+
+        <input id="emailInput" class="input" type="email" placeholder="Seu melhor e-mail" aria-label="E-mail">
+        <div id="emailError" class="error-msg">Por favor, insira um e-mail válido.</div>
+
+        <button id="continueEmailBtn" class="btn primary disabled" style="width:100%;margin-top:16px">
+          Continuar com E-mail
+        </button>
+
+        <div class="small center" style="margin-top:16px;color:rgba(255,255,255,0.5)">
+          Já tem conta? <a href="#" id="loginLink" style="color:#6f46ff;text-decoration:none;">Faça Login</a>
+        </div>
+      </div>
+    </div>
+    
+    <div id="password" class="screen" aria-hidden="true">
+      <div class="header">
+        <h1 id="passwordTitle">Crie uma senha</h1>
+        <p id="passwordSubtitle">Para acessar sua conta segura no BSLEEPY.</p>
+      </div>
+      <div class="card">
+        <input id="passwordInput" class="input" type="password" placeholder="Sua nova senha" aria-label="Nova Senha">
+        <div id="passwordError" class="error-msg">A senha deve ter pelo menos 6 caracteres, 1 maiúscula e 1 número.</div>
+        <ul style="margin-top:10px;list-style:none;padding-left:0;color:rgba(255,255,255,0.7);font-size:13px;">
+          <li>🔒 Mínimo 6 caracteres</li>
+          <li>Atenção: precisa de **1 letra maiúscula** e **1 número**</li>
+        </ul>
+      </div>
+    </div>
+
     <div id="q1" class="screen" aria-hidden="true">
       <div class="header">
         <h1>Qual é o seu nome?</h1>
@@ -266,7 +313,6 @@ body{
       </div>
     </div>
 
-    <!-- Q2: Idade -->
     <div id="q2" class="screen" aria-hidden="true">
       <div class="header">
         <h1>Qual sua idade?</h1>
@@ -277,7 +323,6 @@ body{
       </div>
     </div>
 
-    <!-- Q3: Peso -->
     <div id="q3" class="screen" aria-hidden="true">
       <div class="header">
         <h1>Qual é seu peso (kg)?</h1>
@@ -288,7 +333,6 @@ body{
       </div>
     </div>
 
-    <!-- Q4: Insônia -->
     <div id="q4" class="screen" aria-hidden="true">
       <div class="header">
         <h1>Você tem dificuldade para pegar no sono?</h1>
@@ -303,7 +347,6 @@ body{
       </div>
     </div>
 
-    <!-- Q5: Uso do celular -->
     <div id="q5" class="screen" aria-hidden="true">
       <div class="header">
         <h1>Você usa celular antes de dormir?</h1>
@@ -318,7 +361,6 @@ body{
       </div>
     </div>
 
-    <!-- Q6: Horas de sono -->
     <div id="q6" class="screen" aria-hidden="true">
       <div class="header">
         <h1>Quantas horas dorme por noite em média?</h1>
@@ -333,7 +375,6 @@ body{
       </div>
     </div>
 
-    <!-- Q7: Acorda descansado -->
     <div id="q7" class="screen" aria-hidden="true">
       <div class="header">
         <h1>Você acorda se sentindo descansado?</h1>
@@ -348,7 +389,6 @@ body{
       </div>
     </div>
 
-    <!-- RESULT SCREEN -->
     <div id="result" class="screen" aria-hidden="true">
       <div class="header center">
         <h1 id="resultTitle">Seu resumo gratuito</h1>
@@ -385,8 +425,7 @@ body{
       </div>
 
       <div class="card" style="margin-top:14px">
-      <!-- BOTÃO PARA MOSTRAR PLANOS -->
-<div style="margin-top:18px;text-align:center">
+      <div style="margin-top:18px;text-align:center">
   <button id="seePlansBtn" class="btn primary" style="width:100%">Ver planos premium</button>
 </div>
         <div style="font-weight:700">Dicas rápidas</div>
@@ -398,13 +437,11 @@ body{
       </div>
     </div>
 
-    <!-- FOOTER NAV (hidden until quiz starts) -->
     <div id="footer" class="footer" style="display:none">
       <button id="backBtn" class="btn ghost">Voltar</button>
       <button id="nextBtn" class="btn primary disabled">Continuar</button>
     </div>
 
-    <!-- PLANS MODAL -->
     <div id="plans" class="modal" aria-hidden="true">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div>
@@ -448,7 +485,8 @@ body{
 
 <script>
 /* ---------- State & elements ---------- */
-const steps = ['intro','q1','q2','q3','q4','q5','q6','q7','result'];
+// NOVO ARRAY DE STEPS com 'signup' e 'password'
+const steps = ['intro','signup','password','q1','q2','q3','q4','q5','q6','q7','result'];
 let step = 0;
 const answers = { name:'', age:'', weight:'', insomnia:'', phone:'', hours:'', rested:'' };
 
@@ -460,6 +498,17 @@ const backIcon = document.getElementById('backIcon');
 const startBtn = document.getElementById('startBtn'); // botão central existente
 const nextBtn = document.getElementById('nextBtn');
 const backBtn = document.getElementById('backBtn');
+
+/* NOVOS ELEMENTOS DOM para Login/Cadastro */
+const googleBtn = document.getElementById('googleBtn');
+const facebookBtn = document.getElementById('facebookBtn');
+const emailInput = document.getElementById('emailInput');
+const continueEmailBtn = document.getElementById('continueEmailBtn');
+const passwordInput = document.getElementById('passwordInput');
+const passwordError = document.getElementById('passwordError');
+const passwordTitle = document.getElementById('passwordTitle');
+const passwordSubtitle = document.getElementById('passwordSubtitle');
+
 
 /* screen elements */
 function screenEl(id){ return document.getElementById(id); }
@@ -518,7 +567,17 @@ function showStep(i){
   }
 
   // update progress width
-  const pct = Math.round((step) / (steps.length - 1) * 100);
+  // O progresso deve começar a contar a partir de Q1. (steps.length - 4, que é ['q1'...'result'])
+  const quizSteps = steps.slice(steps.indexOf('q1'));
+  const currentQuizStep = quizSteps.indexOf(steps[step]);
+  
+  let pct = 0;
+  if(currentQuizStep >= 0){
+    pct = Math.round((currentQuizStep) / (quizSteps.length - 1) * 100);
+  } else if(steps[step] === 'signup' || steps[step] === 'password') {
+    pct = 0; // Cadastro/Login é pré-quiz
+  }
+  
   progress.style.width = pct + '%';
 
   // update back button disabled if on intro
@@ -542,11 +601,57 @@ function prevStep(){
   if(step > 0) showStep(step - 1);
 }
 
+/* --- NOVO: Lógica de Validação de Senha --- */
+function validatePassword(pass) {
+    // Pelo menos 6 caracteres
+    if (pass.length < 6) return false;
+    // Pelo menos 1 letra maiúscula
+    if (!/[A-Z]/.test(pass)) return false;
+    // Pelo menos 1 número
+    if (!/[0-9]/.test(pass)) return false;
+    return true;
+}
+
 /* ---------- Validation logic (prevents continue) ---------- */
 function validateCurrent(){
   const curr = steps[step];
   let ok = false;
+  
+  // Limpa estados de erro antes da validação
+  if(emailInput) emailInput.classList.remove('error');
+  if(passwordInput) passwordInput.classList.remove('error');
+  if(passwordError) passwordError.classList.remove('show');
+
   if(curr === 'intro') ok = true;
+  
+  if(curr === 'signup'){
+    // Apenas valida o email para o botão de "Continuar com E-mail"
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+    if(emailInput.value.trim().length > 0 && isEmailValid){
+      continueEmailBtn.classList.remove('disabled');
+      continueEmailBtn.disabled = false;
+    } else {
+      continueEmailBtn.classList.add('disabled');
+      continueEmailBtn.disabled = true;
+    }
+    // O botão principal "Continuar" no rodapé deve ficar desabilitado, exceto se já tiver criado a senha e estiver voltando
+    ok = true; 
+  }
+  
+  if(curr === 'password') {
+    const pass = passwordInput.value;
+    ok = validatePassword(pass);
+    if(!ok && pass.length > 0){
+      passwordInput.classList.add('error');
+      passwordError.classList.add('show');
+    }
+    if(ok){
+      passwordInput.classList.remove('error');
+      passwordError.classList.remove('show');
+    }
+  }
+
+  // Validações do Quiz
   if(curr === 'q1') ok = (nameInput.value.trim().length >= 2);
   if(curr === 'q2') ok = (ageInput.value && Number(ageInput.value) >= 10);
   if(curr === 'q3') ok = (!weightInput.value || (Number(weightInput.value) >= 20 && Number(weightInput.value) < 400)); // optional
@@ -555,12 +660,23 @@ function validateCurrent(){
   if(curr === 'q6') ok = !!answers.hours;
   if(curr === 'q7') ok = !!answers.rested;
   if(curr === 'result') ok = true;
-  // toggle next button
-  if(ok){ nextBtn.classList.remove('disabled'); nextBtn.disabled = false; } else { nextBtn.classList.add('disabled'); nextBtn.disabled = true; }
+  
+  // toggle next button no rodapé
+  if(curr !== 'signup'){ 
+    if(ok){ nextBtn.classList.remove('disabled'); nextBtn.disabled = false; } else { nextBtn.classList.add('disabled'); nextBtn.disabled = true; }
+  } else {
+     // O botão principal do footer fica desabilitado na tela de signup
+     nextBtn.classList.add('disabled');
+     nextBtn.disabled = true;
+  }
+  
   return ok;
 }
 
+
 /* ---------- Wire inputs/options ---------- */
+
+// 1. Start button (from intro) now goes to 'signup'
 if (startBtn) {
   startBtn.addEventListener('click', ()=>{
     // animation: slightly animate intro out before showing quiz
@@ -573,16 +689,69 @@ if (startBtn) {
         // restore (in case user goes back)
         intro.style.transform = '';
         intro.style.opacity = '';
-        showStep(1);
+        showStep(steps.indexOf('signup')); // MUDANÇA: vai para a tela de signup
       }, 360);
     } else {
-      showStep(1);
+      showStep(steps.indexOf('signup')); // MUDANÇA: vai para a tela de signup
     }
   });
 }
+
+// Voltar/Próximo do rodapé
 backBtn.addEventListener('click', ()=> prevStep());
 backIcon.addEventListener('click', ()=> prevStep());
-nextBtn.addEventListener('click', ()=> nextStep());
+nextBtn.addEventListener('click', (ev)=> {
+  if(nextBtn.classList.contains('disabled')) {
+    ev.preventDefault();
+    return;
+  }
+  
+  // Lógica de avanço da tela de senha para Q1 (pula 'signup' e 'password' no array temporariamente)
+  if(steps[step] === 'password' && validatePassword(passwordInput.value)){
+    // Simula que o processo de login/cadastro foi concluído e avança para o quiz
+    nextStep();
+  } else {
+    nextStep();
+  }
+});
+
+
+/* --- NOVO: Login/Cadastro Wiring --- */
+
+// 2. Email input validation
+emailInput.addEventListener('input', ()=>{ validateCurrent(); });
+
+// 3. Continue with Email -> Go to password screen
+continueEmailBtn.addEventListener('click', ()=>{
+  if(continueEmailBtn.disabled) return;
+  // Simula que o usuário está criando uma conta ou logando e precisa de uma senha
+  passwordTitle.innerText = `Olá, crie sua senha!`;
+  passwordSubtitle.innerText = `Sua senha segura para ${emailInput.value}.`;
+  showStep(steps.indexOf('password'));
+});
+
+// 4. Social buttons (simulated) -> Go to password screen
+googleBtn.addEventListener('click', ()=>{
+  // SIMULAÇÃO: vai para a tela de criação de senha após login social (caso seja o primeiro acesso)
+  passwordTitle.innerText = `Quase lá! Crie sua senha`;
+  passwordSubtitle.innerText = `Use sua senha para acessar com o Google ou e-mail.`;
+  showStep(steps.indexOf('password'));
+});
+
+facebookBtn.addEventListener('click', ()=>{
+  // SIMULAÇÃO: vai para a tela de criação de senha após login social (caso seja o primeiro acesso)
+  passwordTitle.innerText = `Quase lá! Crie sua senha`;
+  passwordSubtitle.innerText = `Use sua senha para acessar com o Facebook ou e-mail.`;
+  showStep(steps.indexOf('password'));
+});
+
+// 5. Password input validation
+passwordInput.addEventListener('input', ()=>{ validateCurrent(); });
+passwordInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && validateCurrent()) nextStep();
+});
+/* --- FIM DO NOVO WIRING --- */
+
 
 // inputs
 if (nameInput) nameInput.addEventListener('input', ()=>{ validateCurrent(); });
@@ -762,4 +931,4 @@ if (seePlansBtn) {
 }
 </script>
 </body>
-  </html>
+</html>
