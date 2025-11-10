@@ -726,6 +726,15 @@ const seePlansBtn = document.getElementById('seePlansBtn');
 if (seePlansBtn) {
   seePlansBtn.addEventListener('click', ()=> openPlans());
 }
+<script>
+  // ... seu código do quiz aqui ...
+
+  // Faz todos os 3 botões "Começar Agora" abrirem o quiz
+  document.getElementById("startBtnTop").addEventListener("click", ()=>document.getElementById("startBtn").click());
+  document.getElementById("startBtnMiddle").addEventListener("click", ()=>document.getElementById("startBtn").click());
+  document.getElementById("startBtnBottom").addEventListener("click", ()=>document.getElementById("startBtn").click());
 </script>
+</body>
+</html>
 </body>
 </html>
